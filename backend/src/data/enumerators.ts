@@ -28,3 +28,14 @@ export enum ResponseMessage {
   UpdateRequired = 'Update Required',
   Expired = 'Expired',
 }
+
+export enum Environment {
+  Development = 'development',
+  Production = 'production',
+  Staging = 'staging',
+}
+
+export enum Network {
+  Mainnet = 'mainnet',
+  Testnet = 'testnet',
+}

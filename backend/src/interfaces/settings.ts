@@ -1,5 +1,6 @@
 export interface ISettings {
   nodeEnv: string
+  network: string
   allowedOrigins: string
   fileLogging: boolean
   fileErrorLogging: boolean
@@ -8,4 +9,7 @@ export interface ISettings {
 
   smtpUser: string
   smtpPass: string
+
+  hederaOperatorId: string
+  hederaOperatorPvtKey: string
 }

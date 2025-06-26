@@ -8,15 +8,24 @@ dotenv.config()
 
 const getSettings = (): ISettings => {
   return {
+    // Environment variables
     nodeEnv: String(process.env.NODE_ENV ?? 'development'),
+    network: String(process.env.NETWORK ?? 'testnet'),
+
+    // Email settings
+    smtpUser: String(process.env.SMTP_USER ?? ''),
+    smtpPass: String(process.env.SMTP_PASS ?? ''),
+
+    // Variables for backend only usage
     allowedOrigins: String(process.env.ALLOWED_ORIGINS ?? 'http://localhost:3001'),
     fileLogging: parseBoolean(process.env.FILE_LOGGING),
     fileErrorLogging: parseBoolean(process.env.FILE_ERROR_LOGGING),
     port: parseInt(process.env.PORT ?? '3001'),
     url: String(process.env.URL ?? 'http://localhost'),
 
-    smtpUser: String(process.env.SMTP_USER ?? ''),
-    smtpPass: String(process.env.SMTP_PASS ?? ''),
+    // Hedera Account Variables
+    hederaOperatorId: String(process.env.HEDERA_OPERATOR_ID),
+    hederaOperatorPvtKey: String(process.env.HEDERA_OPERATOR_PVT_KEY),
   }
 }
 

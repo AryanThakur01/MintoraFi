@@ -2,12 +2,15 @@ import { PrismaClient } from '@prisma/client'
 import { randomInt, randomUUID } from 'crypto'
 import { MailService } from './mail.ts'
 import { prisma } from '../utils/prisma.ts'
+import { HederaAccountService } from './hedera/account.ts'
 
 export class AuthService {
   private readonly mailService: MailService
+  private readonly hederaAccountService: HederaAccountService
 
   constructor() {
     this.mailService = new MailService()
+    this.hederaAccountService = new HederaAccountService()
   }
 
   // 1. Generate and store OTP
@@ -51,10 +54,20 @@ export class AuthService {
 
   // 3. Get or create user
   async getOrCreateUser(email: string) {
-    let user = await prisma.user.findUnique({ where: { email } })
+    let user = await prisma.user.findUnique({ where: { email }, include: {hederaAccount: true} })
 
-    if (!user) {
-      user = await prisma.user.create({ data: { email } })
+    if (!user) user = await prisma.user.create({ data: { email }, include: { hederaAccount: true } })
+
+    if (!user.hederaAccount) {
+      const hederaAccount = await this.hederaAccountService.createAccount()
+      user.hederaAccount = await prisma.hederaAccount.create({
+        data: {
+          userId: user.id,
+          accountId: hederaAccount.accountId,
+          privateKey: hederaAccount.privateKey,
+          publicKey: hederaAccount.publicKey,
+        },
+      })
     }
 
     return user
