@@ -9,6 +9,10 @@ export const routeProtector = (req: Request, res: Response, next: NextFunction) 
     return
   }
 
-  res.status(401).json({ message: 'Unauthorized' })
+  if (!req.user) {
+    res.status(401).json({ error: 'Unauthorized' })
+    return
+  }
+
   return
 }

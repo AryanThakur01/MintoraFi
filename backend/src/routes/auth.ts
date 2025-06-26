@@ -1,9 +1,10 @@
 import express from 'express'
 import { AuthService } from '../services/auth.ts'
-import { responseData, responseError, validateBody } from '../helpers/router.ts'
 import { SAuth, SVerifyOtp, TAuth, TVerifyOtp } from '../serializers/auth.ts'
-import { ResponseMessage } from '../data/enumerators.ts'
+import { ResponseMessage, ResponseStatus } from '../data/enumerators.ts'
 import { settings } from '../settings.ts'
+import { sendResponse } from '../utils/send-response.ts'
+import { validateBody } from '../utils/validators.ts'
 
 const router = express.Router()
 
@@ -14,17 +15,17 @@ router.post('/request-otp', validateBody(SAuth), async (req, res) => {
     const { email } = req.body as TAuth
 
     if (!email) {
-      responseError(res, 'Email is required')
+      sendResponse(res, ResponseStatus.BAD_REQUEST, 'Please provide a valid email address')
       return
     }
 
     await authService.sendOtp(email)
-    responseData(res, 'OTP sent successfully')
+    sendResponse(res, ResponseStatus.SUCCESS, 'OTP sent successfully')
   } catch (error) {
     if (error instanceof Error) {
-      responseError(res, error.message)
+      sendResponse(res, ResponseStatus.BAD_REQUEST, error.message)
     } else {
-      responseError(res, ResponseMessage.InternalServerError)
+      sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
     }
   }
 })
@@ -34,7 +35,7 @@ router.post('/verify-otp', validateBody(SVerifyOtp), async (req, res) => {
     const { email, otp } = req.body as TVerifyOtp
 
     if (!email || !otp) {
-      responseError(res, 'Email and OTP are required')
+      sendResponse(res, ResponseStatus.BAD_REQUEST, 'Please provide both email and OTP')
       return
     }
 
@@ -50,12 +51,12 @@ router.post('/verify-otp', validateBody(SVerifyOtp), async (req, res) => {
       sameSite: 'lax',
     })
 
-    responseData(res, { user })
+    sendResponse(res, ResponseStatus.SUCCESS, 'OTP verified successfully', user)
   } catch (error) {
     if (error instanceof Error) {
-      responseError(res, error.message)
+      sendResponse(res, ResponseStatus.BAD_REQUEST, error.message)
     } else {
-      responseError(res, ResponseMessage.InternalServerError)
+      sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
     }
   }
 })

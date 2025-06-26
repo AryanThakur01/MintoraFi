@@ -1,38 +1,25 @@
 export enum ResponseStatus {
-  Success = 200,
-  BadRequest = 400,
-  Unauthorized = 401,
-  Forbidden = 403,
-  NotFound = 404,
-  ValidationError = 422,
-  ToMany = 429,
-  InternalServerError = 500,
-  NotImplemented = 501,
-  UpdatesRequired = 426,
-  Expired = 410,
+  SUCCESS = 200,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  VALIDATION_ERROR = 422,
+  TOO_MANY_REQUESTS = 429,
+  INTERNAL_SERVER_ERROR = 500,
+  NOT_IMPLEMENTED = 501,
+  EXPIRED = 410,
 }
 
 export enum ResponseMessage {
-  Success = 'OK',
-  BadRequest = 'Bad Request',
-  Unauthorized = 'Unauthorized',
-  Forbidden = 'Forbidden',
-  NotFound = 'Not Found',
-  ValidationError = 'Unprocessable Entity',
-  TooManyRequests = 'Too Many Requests',
-  InternalServerError = 'Internal Server Error',
-  NotImplemented = 'Not Implemented',
-  AppVersionNotFound = 'App version is required in the headers.',
-  AppVersionInvalid = 'Invalid app version format. Use semantic versioning.',
-  AppPlatform = 'App platform is required in the headers',
-  UpdateRequired = 'Update Required',
-  Expired = 'Expired',
+  VALIDATION_ERROR = 'UNPROCESSABLE_ENTITY',
+  INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
 }
 
 export enum Environment {
-  Development = 'development',
-  Production = 'production',
-  Staging = 'staging',
+  DEVELOPMENT = 'DEVELOPMENT',
+  PRODUCTION = 'PRODUCTION',
+  STAGING = 'STAGING',
 }
 
 export enum Network {
