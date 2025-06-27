@@ -10,21 +10,23 @@ export const Route = createRootRoute({
     callbackUrl: z.string().optional(),
   }),
   beforeLoad: async ({ location, search }) => {
+    let isAuthenticated = false
     try {
       await axios.get('/api/user/me')
-      if (location.pathname.startsWith('/auth')) throw redirect({ to: search.callbackUrl ?? '/' })
+      isAuthenticated = true
     } catch (error) {
       if (
         isAxiosError(error) &&
         error.response?.status === 401 &&
         !location.pathname.startsWith('/auth')
-      ) {
+      )
         throw redirect({
           to: search.callbackUrl ?? '/auth',
           search: { callbackUrl: location.pathname },
         })
-      } else throw error
     }
+    if (isAuthenticated && location.pathname.startsWith('/auth'))
+      throw redirect({ to: search.callbackUrl ?? '/' })
   },
 })
 
