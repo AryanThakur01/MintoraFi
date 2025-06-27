@@ -8,19 +8,30 @@ import { assets } from './assets'
 import { useState, type FormEvent } from 'react'
 import { useRequestOtp } from './api/hooks'
 import { Button } from '@/components/custom/button'
+import { useRouter, useSearch } from '@tanstack/react-router'
+import { toast } from 'sonner'
 
 export const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
+  const { callbackUrl } = useSearch({ from: '/auth/' })
+  const router = useRouter()
   const [email, setEmail] = useState('')
-  const { mutate, isPending } = useRequestOtp()
-  const authenticate = (e: FormEvent) => {
-    e.preventDefault()
-    mutate(email)
+  const { mutateAsync, isPending } = useRequestOtp()
+  const authenticate = async (e: FormEvent) => {
+    try {
+      e.preventDefault()
+      await mutateAsync(email)
+      router.navigate({ to: '/auth/otp', search: { email, callbackUrl } })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      }
+    }
   }
   return (
-    <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
         <div className={cn('flex flex-col gap-6', className)} {...props}>
-          <Card className="overflow-hidden p-0">
+          <Card className="overflow-hidden p-0 border-0">
             <CardContent className="grid p-0 md:grid-cols-2">
               <form className="p-6 md:p-8" onSubmit={authenticate}>
                 <div className="flex flex-col gap-6">

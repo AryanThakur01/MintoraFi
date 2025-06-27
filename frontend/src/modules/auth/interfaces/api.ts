@@ -3,3 +3,8 @@ export interface IResponse<T, E = unknown> {
   data: T
   extras?: E
 }
+
+export interface IVerifyOtpIn {
+  email: string
+  otp: string
+}

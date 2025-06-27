@@ -15,3 +15,27 @@ export const useRequestOtp = () => {
     },
   })
 }
+
+export const useVerifyOtp = () => {
+  return useMutation({
+    mutationKey: ['verify-otp'],
+    mutationFn: authServices.verifyOtp,
+    onSuccess: (data) => toast.success(data.message),
+    onError: (error: AxiosError) => {
+      const err = error.response?.data
+      if (isDefaultError(err)) toast.error(err.message)
+    },
+  })
+}
+
+export const useResendOtp = () => {
+  return useMutation({
+    mutationKey: ['resend-otp'],
+    mutationFn: authServices.requestOtp,
+    onSuccess: (data) => toast.success(data.message),
+    onError: (error: AxiosError) => {
+      const err = error.response?.data
+      if (isDefaultError(err)) toast.error(err.message)
+    },
+  })
+}

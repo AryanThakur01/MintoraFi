@@ -1,10 +1,30 @@
 import * as React from 'react'
+import { z } from 'zod'
 import { Outlet, createRootRoute, redirect } from '@tanstack/react-router'
+import { axios } from '@/lib/axios'
+import { isAxiosError } from 'axios'
 
 export const Route = createRootRoute({
   component: RootComponent,
-  beforeLoad: async ({ location }) => {
-    if (location.pathname !== '/auth') throw redirect({ to: '/auth' })
+  validateSearch: z.object({
+    callbackUrl: z.string().optional(),
+  }),
+  beforeLoad: async ({ location, search }) => {
+    try {
+      await axios.get('/api/user/me')
+      if (location.pathname.startsWith('/auth')) throw redirect({ to: search.callbackUrl ?? '/' })
+    } catch (error) {
+      if (
+        isAxiosError(error) &&
+        error.response?.status === 401 &&
+        !location.pathname.startsWith('/auth')
+      ) {
+        throw redirect({
+          to: search.callbackUrl ?? '/auth',
+          search: { callbackUrl: location.pathname },
+        })
+      } else throw error
+    }
   },
 })
 
@@ -15,8 +35,8 @@ function RootComponent() {
     root.classList.add('dark')
   }, [])
   return (
-    <React.Fragment>
+    <div className="bg-background">
       <Outlet />
-    </React.Fragment>
+    </div>
   )
 }
