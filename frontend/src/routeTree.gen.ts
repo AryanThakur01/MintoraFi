@@ -9,18 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
+import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as AuthOtpIndexRouteImport } from './routes/auth/otp/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appIndexRoute = appIndexRouteImport.update({
+  id: '/(app)/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthOtpIndexRoute = AuthOtpIndexRouteImport.update({
@@ -30,18 +30,18 @@ const AuthOtpIndexRoute = AuthOtpIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof appIndexRoute
   '/auth': typeof AuthIndexRoute
   '/auth/otp': typeof AuthOtpIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof appIndexRoute
   '/auth': typeof AuthIndexRoute
   '/auth/otp': typeof AuthOtpIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/(app)/': typeof appIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/auth/otp/': typeof AuthOtpIndexRoute
 }
@@ -50,29 +50,29 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/auth' | '/auth/otp'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/auth' | '/auth/otp'
-  id: '__root__' | '/' | '/auth/' | '/auth/otp/'
+  id: '__root__' | '/(app)/' | '/auth/' | '/auth/otp/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  appIndexRoute: typeof appIndexRoute
   AuthIndexRoute: typeof AuthIndexRoute
   AuthOtpIndexRoute: typeof AuthOtpIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth/': {
       id: '/auth/'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/': {
+      id: '/(app)/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof appIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/otp/': {
@@ -86,7 +86,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  appIndexRoute: appIndexRoute,
   AuthIndexRoute: AuthIndexRoute,
   AuthOtpIndexRoute: AuthOtpIndexRoute,
 }

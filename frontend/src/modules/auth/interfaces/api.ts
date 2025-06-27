@@ -1,8 +1,4 @@
-export interface IResponse<T, E = unknown> {
-  message: string
-  data: T
-  extras?: E
-}
+export * from '@/interfaces/api'
 
 export interface IVerifyOtpIn {
   email: string

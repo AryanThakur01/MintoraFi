@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { z } from 'zod'
-import { Outlet, createRootRoute, redirect } from '@tanstack/react-router'
+import { Outlet, createRootRoute, redirect, useLocation } from '@tanstack/react-router'
 import { axios } from '@/lib/axios'
 import { isAxiosError } from 'axios'
+import { AppSidebar } from '@/components/custom/app-sidebar'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -31,6 +32,8 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
+  const location = useLocation()
+  const isApp = !location.pathname.startsWith('/auth')
   React.useEffect(() => {
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')
@@ -38,7 +41,13 @@ function RootComponent() {
   }, [])
   return (
     <div className="bg-background">
-      <Outlet />
+      {isApp ? (
+        <AppSidebar variant="inset">
+          <Outlet />
+        </AppSidebar>
+      ) : (
+        <Outlet />
+      )}
     </div>
   )
 }
