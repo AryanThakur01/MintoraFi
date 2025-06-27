@@ -22,6 +22,22 @@ model User {
 
   hederaAccount     HederaAccount?
   sessions          Session[]
+  authenticity      Authenticity?
+}
+
+model Authenticity {
+  id                        String   @id @default(cuid())
+  userId                    String   @unique
+
+  domain                    String
+  domainVerified            Boolean  @default(false)
+  verificationToken         String   @default(uuid()) // for TXT verification
+  verificationLastCheckedAt DateTime?
+
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model HederaAccount {
