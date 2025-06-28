@@ -12,4 +12,5 @@ export interface ISettings {
 
   hederaOperatorId: string
   hederaOperatorPvtKey: string
+  hederaSupplyKey: string
 }

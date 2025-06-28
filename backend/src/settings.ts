@@ -26,6 +26,7 @@ const getSettings = (): ISettings => {
     // Hedera Account Variables
     hederaOperatorId: String(process.env.HEDERA_OPERATOR_ID),
     hederaOperatorPvtKey: String(process.env.HEDERA_OPERATOR_PVT_KEY),
+    hederaSupplyKey: String(process.env.HEDERA_SUPPLY_KEY ?? ''),
   }
 }
 

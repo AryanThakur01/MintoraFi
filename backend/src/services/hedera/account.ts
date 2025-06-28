@@ -1,6 +1,7 @@
-import { AccountCreateTransaction, PrivateKey } from '@hashgraph/sdk'
+import { AccountCreateTransaction, AccountInfo, AccountInfoQuery, PrivateKey } from '@hashgraph/sdk'
 import { hederaClient } from '../../utils/hedera'
-import { IHederaNewAccount } from '../../interfaces/hedera'
+import { IHederaNewAccount, ITokenInfo } from '../../interfaces/hedera'
+import TokenRelationship from '@hashgraph/sdk/lib/account/TokenRelationship'
 
 export class HederaAccountService {
   async createAccount(): Promise<IHederaNewAccount> {
@@ -19,5 +20,23 @@ export class HederaAccountService {
       privateKey: ecdsaKey._key.toStringDer(),
       publicKey: ecdsaPublicKey.toStringDer(),
     }
+  }
+
+  async getAccountInfo(accountId: string): Promise<AccountInfo> {
+    const accountInfoQuery = new AccountInfoQuery().setAccountId(accountId)
+    const accountInfo = await accountInfoQuery.execute(hederaClient)
+    return accountInfo
+  }
+
+  parseTokenInfoFromRelationsMap(tokenRelationships: Map<string, TokenRelationship>): ITokenInfo[] {
+    const tokenInfo: ITokenInfo[] = []
+    for (const [tokenId, relationship] of tokenRelationships) {
+      tokenInfo.push({
+        tokenId: tokenId,
+        balance: relationship.balance.toNumber(),
+        symbol: relationship.symbol,
+      })
+    }
+    return tokenInfo
   }
 }

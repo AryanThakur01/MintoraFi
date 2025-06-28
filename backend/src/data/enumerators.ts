@@ -26,3 +26,11 @@ export enum Network {
   Mainnet = 'mainnet',
   Testnet = 'testnet',
 }
+
+export enum TokenName {
+  INVOICE = 'Invoice',
+}
+
+export enum TokenSymbol {
+  INV = 'INV',
+}

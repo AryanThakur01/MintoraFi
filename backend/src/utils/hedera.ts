@@ -4,8 +4,8 @@ import { Network } from '../data/enumerators'
 
 const hederaClient = settings.network === Network.Testnet ? Client.forTestnet() : Client.forMainnet()
 hederaClient
-  .setDefaultMaxTransactionFee(new Hbar(2))
-  .setDefaultMaxQueryPayment(new Hbar(1))
+  .setDefaultMaxQueryPayment(new Hbar(20))
+  .setDefaultMaxTransactionFee(new Hbar(20))
   .setRequestTimeout(30_000)
   .setMinBackoff(250)
   .setMaxBackoff(8_000)
