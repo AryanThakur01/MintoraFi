@@ -34,10 +34,10 @@ export class NftService {
     return nftCreateTxReceipt
   }
 
-  async mintNft(tokenId: string): Promise<TransactionReceipt> {
+  async mintNft(tokenId: string, ipfsUrl: string): Promise<TransactionReceipt> {
     const supplyKey = this.supplyKey
 
-    const CID: Uint8Array[] = [Buffer.from('https://images.unsplash.com/photo-1633415565491-7f17373f2e7d')]
+    const CID: Uint8Array[] = [Buffer.from(ipfsUrl)]
 
     const mintTx = new TokenMintTransaction().setTokenId(tokenId).setMetadata(CID).freezeWith(hederaClient)
 
@@ -46,9 +46,5 @@ export class NftService {
     const mintNftTxReceipt = await mintNftTxSubmit.getReceipt(hederaClient)
 
     return mintNftTxReceipt
-  }
-
-  async getNfts() {
-    throw new Error('Method not implemented.')
   }
 }
