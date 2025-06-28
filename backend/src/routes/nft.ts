@@ -1,8 +1,9 @@
 import express from 'express'
 import { NftService } from '../services/hedera/nft'
 import { sendResponse } from '../utils/send-response'
-import { ResponseStatus } from '../data/enumerators'
+import { ResponseMessage, ResponseStatus } from '../data/enumerators'
 import { prisma } from '../utils/prisma'
+import { hederaError } from '../utils/hedera'
 
 const router = express.Router()
 
@@ -21,7 +22,12 @@ router.post('/create', async (req, res) => {
     const nft = await nftService.createNft()
     sendResponse(res, ResponseStatus.SUCCESS, 'NFT created successfully', { nftId: nft })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create NFT' })
+    const hederaErrorDetails = hederaError(error)
+    if (hederaErrorDetails) {
+      sendResponse(res, ResponseStatus.BAD_REQUEST, hederaErrorDetails)
+      return
+    }
+    sendResponse(res, ResponseStatus.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR)
   }
 })
 
@@ -41,7 +47,12 @@ router.post('/mint/:tokenId', async (req, res) => {
     const nft = await nftService.mintNft(tokenId)
     sendResponse(res, ResponseStatus.SUCCESS, 'NFT minted successfully', { nft })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to mint NFT' })
+    const hederaErrorDetails = hederaError(error)
+    if (hederaErrorDetails) {
+      sendResponse(res, ResponseStatus.BAD_REQUEST, hederaErrorDetails)
+      return
+    }
+    sendResponse(res, ResponseStatus.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR)
   }
 })
 
