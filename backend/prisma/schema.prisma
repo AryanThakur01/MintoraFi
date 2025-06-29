@@ -67,4 +67,22 @@ model OtpRequest {
   otp       String
   createdAt DateTime @default(now())
   expiresAt DateTime
-} 
+}
+
+enum Creator {
+  BUYER
+  SELLER
+}
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+model NftMetadata {
+  id                String      @id @default(cuid())
+  tokenId           String      @unique
+  creator           Creator
+  visibility        Visibility  @default(PRIVATE)
+
+  verified          Boolean     @default(false)
+  verificationEmail String?
+}

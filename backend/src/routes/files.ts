@@ -24,7 +24,7 @@ router.post('/upload', async (req, res) => {
     const fileProcessor = new FileProcessor()
 
     uploadedFiles = await fileProcessor.saveFile(req, hederaAccount.userId)
-    if (uploadedFiles.length !== 1) throw new Error('Invalid number of files uploaded. Please upload exactly one file.')
+    if (uploadedFiles.length !== 1) throw new Error('You can upload only one file at a time')
     const uploadedFile = await apillonStorageService.uploadFileToBucket(uploadedFiles[0], req.user.id)
     sendResponse(res, ResponseStatus.SUCCESS, 'File upload successfull', uploadedFile)
   } catch (error) {

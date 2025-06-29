@@ -24,21 +24,24 @@ export class ApillonStorageService {
   }
 
   detectMimeType(buffer: Buffer): string {
-    if (buffer.slice(0, 4).toString('hex') === '25504446') {
-      return 'application/pdf' // PDF
+    const isMatch = (start: number, bytes: number[], offset = 0) => {
+      return Buffer.compare(buffer.subarray(start, start + bytes.length), Buffer.from(bytes)) === 0
     }
-    if (buffer.slice(0, 8).toString('hex') === '89504e470d0a1a0a') {
-      return 'image/png' // PNG
-    }
-    if (buffer.slice(0, 3).toString('hex') === '474946') {
-      return 'image/gif' // GIF
-    }
-    if (buffer.slice(0, 2).toString('hex') === 'ffd8' && buffer.slice(-2).toString('hex') === 'ffd9') {
-      return 'image/jpeg' // JPEG
-    }
-    if (buffer.slice(0, 4).toString('hex') === '52494646' && buffer.slice(8, 12).toString('hex') === '57454250') {
-      return 'image/webp' // WebP
-    }
+    // PDF: Starts with 25 50 44 46 => %PDF
+    if (isMatch(0, [0x25, 0x50, 0x44, 0x46])) return 'application/pdf'
+
+    // PNG: Starts with 89 50 4E 47 0D 0A 1A 0A
+    if (isMatch(0, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return 'image/png'
+
+    // GIF: Starts with 47 49 46 => GIF
+    if (isMatch(0, [0x47, 0x49, 0x46])) return 'image/gif'
+
+    // JPEG: Starts with FF D8 and ends with FF D9
+    if (isMatch(0, [0xff, 0xd8]) && Buffer.compare(buffer.subarray(buffer.length - 2), Buffer.from([0xff, 0xd9])) === 0) return 'image/jpeg'
+
+    // WebP: Starts with RIFF....WEBP
+    if (isMatch(0, [0x52, 0x49, 0x46, 0x46]) && isMatch(8, [0x57, 0x45, 0x42, 0x50])) return 'image/webp'
+
     throw new Error('Unsupported file type')
   }
 
