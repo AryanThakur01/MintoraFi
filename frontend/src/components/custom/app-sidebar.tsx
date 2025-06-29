@@ -29,6 +29,8 @@ import {
   SettingsIcon,
 } from 'lucide-react'
 import { SiteHeader } from './site-header'
+import { NavMain } from './nav-main'
+import { Link } from '@tanstack/react-router'
 
 const data = {
   user: {
@@ -39,17 +41,17 @@ const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '#',
+      url: '/',
       icon: LayoutDashboardIcon,
     },
     {
       title: 'Lifecycle',
-      url: '#',
+      url: '/lifecycle',
       icon: ListIcon,
     },
     {
       title: 'Analytics',
-      url: '#',
+      url: '/analytics',
       icon: ChartBarIcon,
     },
   ],
@@ -148,18 +150,16 @@ export const AppSidebar = ({
       <Sidebar collapsible="offcanvas" {...props}>
         <SidebarHeader>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-                <a href="#">
-                  <CoinsIcon className="!size-5" />
-                  <span className="text-base font-semibold">MintoraFi</span>
-                </a>
-              </SidebarMenuButton>
+            <SidebarMenuItem className="p-1.5 hover:bg-transparent hover:text-primary">
+              <Link to="/" className="flex gap-4 items-center">
+                <CoinsIcon className="!size-5" />
+                <span className="text-base font-semibold">{import.meta.env.VITE_APP_NAME}</span>
+              </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          {/* <NavMain items={data.navMain} /> */}
+          <NavMain items={data.navMain} />
           {/* <NavDocuments items={data.documents} /> */}
           {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
         </SidebarContent>
@@ -167,7 +167,7 @@ export const AppSidebar = ({
       </Sidebar>
       <SidebarInset>
         <SiteHeader />
-        {children}
+        <div className="px-4 lg:px-6 pt-4 lg:pt-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )

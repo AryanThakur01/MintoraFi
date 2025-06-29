@@ -38,7 +38,7 @@ export const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) 
                   <div className="flex flex-col items-center text-center">
                     <h1 className="text-2xl font-bold">Welcome</h1>
                     <p className="text-muted-foreground text-balance">
-                      Login to your MintoraFi account
+                      Login to your {import.meta.env.VITE_APP_NAME} account
                     </p>
                   </div>
                   <div className="grid gap-3">

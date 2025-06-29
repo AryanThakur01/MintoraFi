@@ -4,7 +4,7 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { useVerifyOtp, useResendOtp } from './api/hooks'
 import { Button } from '@/components/custom/button'
 import { KeyRound, ArrowLeft, Timer } from 'lucide-react'
-import { InputOTP } from '@/components/custom/input-otp'
+import { InputOTP } from './components/input-otp'
 import { toast } from 'sonner'
 import { useRouter } from '@tanstack/react-router'
 

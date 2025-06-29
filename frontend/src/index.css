@@ -1,5 +1,10 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import url('/Satoshi/fonts/css/satoshi.css');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+body {
+  font-family: 'Satoshi', sans-serif;
+}
 
 @custom-variant dark (&:is(.dark *));
 
