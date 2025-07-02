@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as AuthOtpIndexRouteImport } from './routes/auth/otp/index'
+import { Route as appMarketplaceIndexRouteImport } from './routes/(app)/marketplace/index'
+import { Route as appInvoicesIndexRouteImport } from './routes/(app)/invoices/index'
+import { Route as appInvoicesInvoiceIndexRouteImport } from './routes/(app)/invoices/$invoice/index'
 
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
@@ -28,35 +31,81 @@ const AuthOtpIndexRoute = AuthOtpIndexRouteImport.update({
   path: '/auth/otp/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const appMarketplaceIndexRoute = appMarketplaceIndexRouteImport.update({
+  id: '/(app)/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appInvoicesIndexRoute = appInvoicesIndexRouteImport.update({
+  id: '/(app)/invoices/',
+  path: '/invoices/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appInvoicesInvoiceIndexRoute = appInvoicesInvoiceIndexRouteImport.update({
+  id: '/(app)/invoices/$invoice/',
+  path: '/invoices/$invoice/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof appIndexRoute
   '/auth': typeof AuthIndexRoute
+  '/invoices': typeof appInvoicesIndexRoute
+  '/marketplace': typeof appMarketplaceIndexRoute
   '/auth/otp': typeof AuthOtpIndexRoute
+  '/invoices/$invoice': typeof appInvoicesInvoiceIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof appIndexRoute
   '/auth': typeof AuthIndexRoute
+  '/invoices': typeof appInvoicesIndexRoute
+  '/marketplace': typeof appMarketplaceIndexRoute
   '/auth/otp': typeof AuthOtpIndexRoute
+  '/invoices/$invoice': typeof appInvoicesInvoiceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)/': typeof appIndexRoute
   '/auth/': typeof AuthIndexRoute
+  '/(app)/invoices/': typeof appInvoicesIndexRoute
+  '/(app)/marketplace/': typeof appMarketplaceIndexRoute
   '/auth/otp/': typeof AuthOtpIndexRoute
+  '/(app)/invoices/$invoice/': typeof appInvoicesInvoiceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/auth/otp'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/invoices'
+    | '/marketplace'
+    | '/auth/otp'
+    | '/invoices/$invoice'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/auth/otp'
-  id: '__root__' | '/(app)/' | '/auth/' | '/auth/otp/'
+  to:
+    | '/'
+    | '/auth'
+    | '/invoices'
+    | '/marketplace'
+    | '/auth/otp'
+    | '/invoices/$invoice'
+  id:
+    | '__root__'
+    | '/(app)/'
+    | '/auth/'
+    | '/(app)/invoices/'
+    | '/(app)/marketplace/'
+    | '/auth/otp/'
+    | '/(app)/invoices/$invoice/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   appIndexRoute: typeof appIndexRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  appInvoicesIndexRoute: typeof appInvoicesIndexRoute
+  appMarketplaceIndexRoute: typeof appMarketplaceIndexRoute
   AuthOtpIndexRoute: typeof AuthOtpIndexRoute
+  appInvoicesInvoiceIndexRoute: typeof appInvoicesInvoiceIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,13 +131,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthOtpIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/marketplace/': {
+      id: '/(app)/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof appMarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/invoices/': {
+      id: '/(app)/invoices/'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof appInvoicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/invoices/$invoice/': {
+      id: '/(app)/invoices/$invoice/'
+      path: '/invoices/$invoice'
+      fullPath: '/invoices/$invoice'
+      preLoaderRoute: typeof appInvoicesInvoiceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   appIndexRoute: appIndexRoute,
   AuthIndexRoute: AuthIndexRoute,
+  appInvoicesIndexRoute: appInvoicesIndexRoute,
+  appMarketplaceIndexRoute: appMarketplaceIndexRoute,
   AuthOtpIndexRoute: AuthOtpIndexRoute,
+  appInvoicesInvoiceIndexRoute: appInvoicesInvoiceIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

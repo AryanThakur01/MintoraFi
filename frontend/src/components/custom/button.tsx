@@ -4,12 +4,13 @@ import { Button as BtnShadCn } from '../ui/button'
 
 interface IButtonProps extends React.ComponentProps<typeof BtnShadCn> {
   isLoading?: boolean
+  DefaultIcon?: React.ElementType
 }
 export const Button = React.forwardRef<HTMLButtonElement, IButtonProps>(
-  ({ isLoading, ...props }, ref) => {
+  ({ isLoading, DefaultIcon = React.Fragment, ...props }, ref) => {
     return (
-      <BtnShadCn ref={ref} {...props}>
-        {isLoading ? <Loader2 className="animate-spin mr-2" /> : <></>}
+      <BtnShadCn ref={ref} disabled={isLoading} {...props}>
+        {isLoading ? <Loader2 className="animate-spin mr-2" /> : <DefaultIcon />}
         {props.children}
       </BtnShadCn>
     )

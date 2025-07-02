@@ -1,6 +1,8 @@
 import { useMe } from '@/api/hooks'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { CoreText } from './core-text'
+import { Link } from 'lucide-react'
 
 export function SiteHeader() {
   const { data, isLoading } = useMe()
@@ -13,7 +15,16 @@ export function SiteHeader() {
           <h1 className="text-base font-medium animate-pulse bg-gray-200 dark:bg-gray-700 w-32 h-6 rounded" />
         ) : (
           data?.hederaAccount.accountId && (
-            <h1 className="text-base font-medium">{data.hederaAccount.accountId}</h1>
+            <CoreText variant="bold" className="flex items-center gap-2">
+              <span>{data.hederaAccount.accountId}</span>
+              <a
+                href={`https://explorer.arkhia.io/testnet/account/${data.hederaAccount.accountId}`}
+                target="_blank"
+                className="hover:text-primary"
+              >
+                <Link size={16} />
+              </a>
+            </CoreText>
           )
         )}
       </div>

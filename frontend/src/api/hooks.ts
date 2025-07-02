@@ -8,3 +8,11 @@ export const useMe = () => {
     staleTime: 1000 * 60 * 5, // 5 minutes
   })
 }
+
+export const useAvailableFiles = () => {
+  return useQuery({
+    queryKey: ['files'],
+    queryFn: globalServices.getFiles,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
+}
