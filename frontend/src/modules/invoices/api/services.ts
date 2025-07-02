@@ -59,12 +59,19 @@ interface IInvoiceInfo {
   details: INftTemplateInfo
   nfts: IMintedNftInfo[]
 }
+interface IMintInvoiceNftRequest {
+  tokenId: string
+  metadataCID: string
+}
 export const globalServices = {
   getAccount: async () => {
     return (await axios.get<IResponse<IAccount>>('/api/user/account')).data.data
   },
   createInvoice: async () => {
     return (await axios.post<IResponse<unknown>>('/api/nft/create')).data
+  },
+  mintInvoiceNft: async (data: IMintInvoiceNftRequest) => {
+    return (await axios.post<IResponse<unknown>>(`/api/nft/mint`, data)).data
   },
   getInvoiceNftInfo: async (tokenId: string) => {
     return (await axios.get<IResponse<IInvoiceInfo>>(`/api/nft/${tokenId}`)).data

@@ -22,6 +22,18 @@ export const useCreateInvoice = () => {
   })
 }
 
+export const useMintInvoiceNft = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: ['mint-invoice-nft'],
+    mutationFn: globalServices.mintInvoiceNft,
+    onSuccess: (data) => {
+      toast.success(data.message)
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ['nft-info'] }), 2000)
+    },
+  })
+}
+
 export const useNftInfo = (tokenId: string) => {
   return useQuery({
     queryKey: ['nft-info', tokenId],

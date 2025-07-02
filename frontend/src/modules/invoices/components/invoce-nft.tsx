@@ -1,4 +1,4 @@
-import { useAccount, useNftInfo } from '../api/hooks'
+import { useMintInvoiceNft, useNftInfo } from '../api/hooks'
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select'
 import {
   Dialog,
@@ -12,7 +12,9 @@ import { useState } from 'react'
 import { useAvailableFiles, useMe } from '@/api/hooks'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Coins, DollarSign, Hash } from 'lucide-react'
+import { Coins, DollarSign, ExternalLinkIcon, Hash, Loader2 } from 'lucide-react'
+import { InvoiceCoverImg } from './invoice-cover-img'
+import { timeAgoFromTimestamp } from '@/lib/utils'
 
 interface IInvoiceNft {
   tokenId: string
@@ -26,12 +28,11 @@ const decodeBase64 = (input: string): string => {
   }
 }
 export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
-  // const { data: account, isLoading: accountLoading } = useAccount()
-  // const token = account?.tokens.find((t) => t.tokenId === tokenId)
   const { data: filesData, isLoading: isLoadingFileData } = useAvailableFiles()
   const [selectedCid, setSelectedCid] = useState<string | null>(null)
   const { data: token, isLoading } = useNftInfo(tokenId)
   const { data: me, isLoading: isMeLoading } = useMe()
+  const { mutate: mintInvoice, isPending } = useMintInvoiceNft()
 
   return (
     <div className="p-6 space-y-6">
@@ -65,9 +66,10 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
 
             <Button
               className="mt-4"
-              disabled={!selectedCid}
-              // onClick={() => selectedCid && mintInvoice(selectedCid)}
+              disabled={!selectedCid || isPending}
+              onClick={() => selectedCid && mintInvoice({ tokenId, metadataCID: selectedCid })}
             >
+              {isPending ? <Loader2 className="stroke-white animate-spin" /> : null}
               Confirm Mint
             </Button>
           </DialogContent>
@@ -78,9 +80,9 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {/* Token Info Card */}
         {isLoading || isMeLoading ? (
-          <Skeleton className="h-40 w-full rounded-xl" />
+          <Skeleton className="h-48 w-full rounded-xl col-span-full" />
         ) : token ? (
-          <Card className="border shadow-sm rounded-2xl h-fit">
+          <Card className="border shadow-sm rounded-2xl h-fit col-span-full">
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Coins className="w-5 h-5 text-primary" />
@@ -117,47 +119,59 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
         {isLoading ? (
           <Skeleton className="h-40 w-full rounded-2xl" />
         ) : token?.data.nfts.length === 0 ? (
-          <p className="text-sm text-muted-foreground my-auto">No NFTs minted for this token.</p>
-        ) : null}
-        {token?.data.nfts.map((nft) => {
-          const meta = decodeBase64(nft.metadata)
-          return (
-            <Card className="border shadow-sm rounded-2xl overflow-hidden">
-              <div className="h-40 w-full bg-muted relative">
-                {/* <img src={nft.coverImageUrl} alt={nft.name} className="object-cover w-full h-full" /> */}
-              </div>
+          <p className="text-sm text-muted-foreground my-auto border rounded-lg col-span-full text-center py-20">
+            No NFT Invoices minted for this token.
+          </p>
+        ) : (
+          token?.data.nfts.map((nft) => {
+            const meta = decodeBase64(nft.metadata)
+            return (
+              <Card className="border shadow-sm rounded-2xl overflow-hidden">
+                <div className="h-40 w-full bg-muted relative">
+                  <InvoiceCoverImg cid={meta} alt={token.data.details.name} />
+                </div>
 
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold truncate">
-                  Name
-                  {token.data.details.name}
-                </CardTitle>
-              </CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold truncate flex items-center justify-between">
+                    <p>Name:</p>
+                    <p className="flex gap-1 items-center">
+                      <span>{token.data.details.name}</span>
+                      <a
+                        href={`https://explorer.arkhia.io/testnet/token/${tokenId}/${nft.serial_number}`}
+                        className="ml-2 text-primary"
+                        target="_blank"
+                      >
+                        <ExternalLinkIcon size={16} />
+                      </a>
+                    </p>
+                  </CardTitle>
+                </CardHeader>
 
-              <CardContent className="text-sm text-muted-foreground space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">CID:</span>
-                  <a
-                    href={`https://ipfs.io/ipfs/${meta}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="truncate text-blue-600 hover:underline"
-                  >
-                    {meta.slice(0, 10)}...
-                  </a>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">Minted On:</span>
-                  <span>{new Date(nft.created_timestamp).toLocaleDateString()}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">Serial Number:</span>
-                  <span>{nft.serial_number}</span>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+                <CardContent className="text-sm text-muted-foreground space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-foreground">CID:</span>
+                    <a
+                      href={`https://ipfs.io/ipfs/${meta}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="truncate text-blue-600 hover:underline"
+                    >
+                      {meta.slice(0, 10)}...
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-foreground">Minted On:</span>
+                    <span>{timeAgoFromTimestamp(nft.created_timestamp)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-foreground">Serial Number:</span>
+                    <span>{nft.serial_number}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })
+        )}
       </div>
     </div>
   )
