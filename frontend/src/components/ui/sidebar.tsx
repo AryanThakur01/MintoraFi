@@ -688,5 +688,5 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
+  // useSidebar, // removed manually for fast refresh to work properly
 }
