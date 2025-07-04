@@ -29,7 +29,7 @@ router.post('/upload', async (req, res) => {
     sendResponse(res, ResponseStatus.SUCCESS, 'File upload successfull', uploadedFile)
   } catch (error) {
     if (error instanceof Error) sendResponse(res, ResponseStatus.BAD_REQUEST, error.message)
-    sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
+    else sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
   } finally {
     if (uploadedFiles.length > 0) {
       const fileProcessor = new FileProcessor()
@@ -54,11 +54,11 @@ router.get('/', async (req, res) => {
       return
     }
     const apillonStorageService = new ApillonStorageService()
-    const invoices = await apillonStorageService.getInvoiceFiles()
+    const invoices = await apillonStorageService.getInvoiceFiles(req.user.id)
     sendResponse(res, ResponseStatus.SUCCESS, 'Files Retrieved successfully', invoices)
   } catch (error) {
     if (error instanceof Error) sendResponse(res, ResponseStatus.BAD_REQUEST, error.message)
-    sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
+    else sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
   }
 })
 

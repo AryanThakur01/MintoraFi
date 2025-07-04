@@ -1,7 +1,7 @@
-import axios, { Axios, AxiosError } from 'axios'
+import axios, { Axios } from 'axios'
 import fs from 'fs'
 import { settings } from '../settings'
-import { IApillonFileDetails, IApillonUploadSession, ISessionEnd } from '../interfaces/apillon-storage'
+import { IApillonFileDetails, IApillonUploadSession, IFetchedFolders, IIpfsFile, ISessionEnd } from '../interfaces/apillon-storage'
 
 export class ApillonStorageService {
   private readonly axios: Axios
@@ -18,9 +18,14 @@ export class ApillonStorageService {
     })
   }
 
-  async getInvoiceFiles(): Promise<any[]> {
-    const response = await this.axios.get(`/storage/buckets/${this.invoiceBucketId}/files`)
-    return response.data
+  async getInvoiceFiles(userId: string): Promise<{ data: { items: IIpfsFile } }> {
+    const folders = await this.axios.get<IFetchedFolders>(`/storage/buckets/${this.invoiceBucketId}/content`)
+    const userFolder = folders.data.data.items.find((folder) => folder.name === userId)
+
+    const files = await this.axios.get<{ data: { items: IIpfsFile } }>(
+      `/storage/buckets/${this.invoiceBucketId}/content?directoryUuid=${userFolder?.uuid}`
+    )
+    return files.data
   }
 
   detectMimeType(buffer: Buffer): string {
@@ -42,6 +47,9 @@ export class ApillonStorageService {
     // WebP: Starts with RIFF....WEBP
     if (isMatch(0, [0x52, 0x49, 0x46, 0x46]) && isMatch(8, [0x57, 0x45, 0x42, 0x50])) return 'image/webp'
 
+    // JSON:
+    if (isMatch(0, [0x7b]) && isMatch(buffer.length - 1, [0x7d])) return 'application/json'
+
     throw new Error('Unsupported file type')
   }
 
@@ -54,7 +62,7 @@ export class ApillonStorageService {
     const upload = await this.axios.post<IApillonUploadSession>(`/storage/buckets/${this.invoiceBucketId}/upload`, {
       files: [
         {
-          fileName: filePath.split('/').pop() || 'file',
+          fileName: filePath.split('/').pop()?.replace(`${userId}_`, '') || 'file',
           contentType: fileMimeType,
           path: userId, // user's file is uploaded to his unique directory
         },
