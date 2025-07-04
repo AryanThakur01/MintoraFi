@@ -1,20 +1,11 @@
-import { useMintInvoiceNft, useNftInfo } from '../api/hooks'
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select'
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/custom/button'
-import { useState } from 'react'
-import { useAvailableFiles, useMe } from '@/api/hooks'
+import { useNftInfo } from '../api/hooks'
+import { useMe } from '@/api/hooks'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Coins, DollarSign, ExternalLinkIcon, Hash, Loader2 } from 'lucide-react'
+import { Coins, DollarSign, ExternalLinkIcon, Hash } from 'lucide-react'
 import { InvoiceCoverImg } from './invoice-cover-img'
 import { timeAgoFromTimestamp } from '@/lib/utils'
+import { MintInvoiceDialog } from './mint-invoice-dialog'
 
 interface IInvoiceNft {
   tokenId: string
@@ -28,52 +19,14 @@ const decodeBase64 = (input: string): string => {
   }
 }
 export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
-  const { data: filesData, isLoading: isLoadingFileData } = useAvailableFiles()
-  const [selectedCid, setSelectedCid] = useState<string | null>(null)
   const { data: token, isLoading } = useNftInfo(tokenId)
   const { data: me, isLoading: isMeLoading } = useMe()
-  const { mutate: mintInvoice, isPending } = useMintInvoiceNft()
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-2xl font-bold">Invoices</h1>
-        <Dialog>
-          {isLoadingFileData ? (
-            <Skeleton className="w-32 h-9"></Skeleton>
-          ) : (
-            <DialogTrigger asChild>
-              <Button className="w-32">Mint Invoice</Button>
-            </DialogTrigger>
-          )}
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Select a file to mint</DialogTitle>
-            </DialogHeader>
-
-            <Select onValueChange={(val) => setSelectedCid(val)} value={selectedCid || ''}>
-              <SelectTrigger className="w-full">
-                {selectedCid ?? 'Select a file to mint'}
-              </SelectTrigger>
-              <SelectContent>
-                {filesData?.data.data.items.map((file) => (
-                  <SelectItem key={file.id} value={file.CID}>
-                    {file.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Button
-              className="mt-4"
-              disabled={!selectedCid || isPending}
-              onClick={() => selectedCid && mintInvoice({ tokenId, metadataCID: selectedCid })}
-            >
-              {isPending ? <Loader2 className="stroke-white animate-spin" /> : null}
-              Confirm Mint
-            </Button>
-          </DialogContent>
-        </Dialog>
+        <MintInvoiceDialog tokenId={tokenId} />
       </div>
 
       {/* Grid container for all cards */}

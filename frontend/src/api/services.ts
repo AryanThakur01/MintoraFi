@@ -11,24 +11,25 @@ interface IUser {
     publicKey: string
   }
 }
+export interface IIpfsFile {
+  uuid: string
+  name: string
+  CID: string
+  createTime: string
+  updateTime: string
+  fileUuid: string
+  CIDv1: string
+  contentType: string
+  path: string
+  size: number
+  fileStatus: number
+  link: string
+}
 interface IFiles {
   id: string
   status: number
   data: {
-    items: Array<{
-      id: number
-      createTime: string
-      updateTime: string
-      fileUuid: string
-      CID: string
-      CIDv1: string
-      name: string
-      contentType: string
-      path: string
-      size: number
-      fileStatus: number
-      link: string
-    }>
+    items: Array<IIpfsFile>
   }
 }
 export const globalServices = {
