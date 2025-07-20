@@ -1,6 +1,6 @@
 import { AccountCreateTransaction, AccountInfo, AccountInfoQuery, PrivateKey } from '@hashgraph/sdk'
 import { hederaClient } from '../../utils/hedera'
-import { IHederaNewAccount, INftTemplateInfo, ITokenInfo } from '../../interfaces/hedera'
+import { IHederaNewAccount, IMintedNftInfo, INftTemplateInfo, ITokenInfo } from '../../interfaces/hedera'
 import TokenRelationship from '@hashgraph/sdk/lib/account/TokenRelationship'
 import axios, { AxiosInstance } from 'axios'
 import { settings } from '../../settings'
@@ -39,11 +39,11 @@ export class HederaAccountService {
     return accountInfo
   }
 
-  async getNftInfo(tokenId: string): Promise<{ details: INftTemplateInfo; nfts: INftTemplateInfo[] }> {
+  async getNftInfo(tokenId: string): Promise<{ details: INftTemplateInfo; nfts: IMintedNftInfo[] }> {
     const { data: details } = await this.axios.get<INftTemplateInfo>(`/api/v1/tokens/${tokenId}`)
     const {
       data: { nfts },
-    } = await this.axios.get<{ nfts: INftTemplateInfo[] }>(`/api/v1/tokens/${tokenId}/nfts`)
+    } = await this.axios.get<{ nfts: IMintedNftInfo[] }>(`/api/v1/tokens/${tokenId}/nfts`)
     return { details, nfts }
   }
 

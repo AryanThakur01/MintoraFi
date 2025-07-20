@@ -1,13 +1,18 @@
 import { PrivateKey, TokenCreateTransaction, TokenMintTransaction, TokenSupplyType, TokenType, TransactionReceipt } from '@hashgraph/sdk'
-import { HederaAccount } from '@prisma/client'
+import { HederaAccount, InvoiceNftMarketplace } from '@prisma/client'
 import { hederaClient } from '../../utils/hedera'
 import { settings } from '../../settings'
 import { TokenName, TokenSymbol } from '../../data/enumerators'
+import { HederaAccountService } from './account'
+import { prisma } from '../../utils/prisma'
+import { TMarketplaceFilters, TMarketplaceNft } from '../../serializers/nft'
 
-export class NftService {
+export class NftService extends HederaAccountService {
   private hederaAccount: HederaAccount
   private supplyKey: PrivateKey
+
   constructor(hederaAccount: HederaAccount) {
+    super()
     this.supplyKey = PrivateKey.fromStringDer(settings.hederaSupplyKey)
     this.hederaAccount = hederaAccount
   }
@@ -47,4 +52,56 @@ export class NftService {
 
     return mintNftTxReceipt
   }
+
+  async toggleMarketplace(tokenId: string, serial_number: number, userId: string): Promise<InvoiceNftMarketplace> {
+    const nftInfo = await this.getNftInfo(tokenId)
+    const currentNft = nftInfo.nfts.find((nft) => nft.serial_number === serial_number)
+    if (!currentNft) throw new Error('NFT not found')
+    const previousInvoice = await prisma.invoiceNftMarketplace.findUnique({
+      where: {
+        userId_tokenId_serialNumber: {
+          userId,
+          tokenId,
+          serialNumber: currentNft.serial_number
+        }
+      }
+    })
+    const invoice = await prisma.invoiceNftMarketplace.upsert({
+      create: {
+        userId,
+        tokenId,
+        serialNumber: currentNft.serial_number,
+        metadata: currentNft.metadata,
+        forSale: !previousInvoice?.forSale
+      },
+      update: {
+        forSale: !previousInvoice?.forSale,
+      },
+      where: {
+        userId_tokenId_serialNumber: {
+          userId,
+          tokenId,
+          serialNumber: currentNft.serial_number
+        }
+      }
+    })
+    return invoice
+  }
+
+  async getMarketplace(filter: TMarketplaceFilters): Promise<InvoiceNftMarketplace[]> {
+    const { userId, tokenId, serialNumber, limit = 10, offset = 0 } = filter
+    const nfts = await prisma.invoiceNftMarketplace.findMany({
+      where: {
+        forSale: true,
+        ...(userId && { userId }),
+        ...(tokenId && { tokenId }),
+        ...(serialNumber && { serialNumber })
+      },
+      take: limit,
+      skip: offset,
+      orderBy: { createdAt: 'desc' }
+    })
+    return nfts
+  }
+
 }

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { globalServices } from './services'
+import { globalServices, type IMarketplaceNftFilters } from './services'
 import { toast } from 'sonner'
 
 export const useAccount = () => {
@@ -40,5 +40,26 @@ export const useNftInfo = (tokenId: string) => {
     queryFn: () => globalServices.getInvoiceNftInfo(tokenId),
     staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: !!tokenId,
+  })
+}
+
+export const useAddToMarketplace = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: ['add-to-marketplace'],
+    mutationFn: globalServices.addToMarketplace,
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.invalidateQueries({ queryKey: ['marketplace-nfts'] })
+    },
+  })
+}
+
+export const useMarketplaceNfts = (filters?: IMarketplaceNftFilters) => {
+  return useQuery({
+    queryKey: ['marketplace-nfts', filters],
+    queryFn: () => globalServices.getMarketplaceNfts(filters),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false,
   })
 }

@@ -5,8 +5,8 @@ import { ResponseMessage, ResponseStatus } from '../data/enumerators'
 import { prisma } from '../utils/prisma'
 import { hederaError } from '../utils/hedera'
 import { HederaAccountService } from '../services/hedera/account'
-import { validateBody } from '../utils/validators'
-import { SMintNft, TMintNft } from '../serializers/nft'
+import { validateBody, validateQuery } from '../utils/validators'
+import { SMarketplaceFilters, SMarketplaceNft, SMintNft, TMarketplaceFilters, TMarketplaceNft, TMintNft } from '../serializers/nft'
 
 const router = express.Router()
 
@@ -71,6 +71,57 @@ router.post('/mint', validateBody(SMintNft), async (req, res) => {
   }
 })
 
+router.post('/marketplace', validateBody(SMarketplaceNft), async (req, res) => {
+  try {
+    if (!req.user) {
+      sendResponse(res, ResponseStatus.UNAUTHORIZED, 'User not authenticated')
+      return
+    }
+    const hederaAccount = await prisma.hederaAccount.findUnique({ where: { userId: req.user.id } })
+    if (!hederaAccount) {
+      sendResponse(res, ResponseStatus.NOT_FOUND, 'Hedera account not found for user')
+      return
+    }
+    const { tokenId, serialNumber } = req.body as TMarketplaceNft
+    const nftService = new NftService(hederaAccount)
+    await nftService.toggleMarketplace(tokenId, serialNumber, req.user.id)
+
+    sendResponse(res, ResponseStatus.SUCCESS, 'Marketplace NFTs retrieved successfully', {})
+  } catch (error) {
+    const hederaErrorDetails = hederaError(error)
+    if (hederaErrorDetails) {
+      sendResponse(res, ResponseStatus.BAD_REQUEST, hederaErrorDetails)
+      return
+    }
+    sendResponse(res, ResponseStatus.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR)
+  }
+})
+
+router.get('/marketplace', validateQuery(SMarketplaceFilters), async (req, res) => {
+  try {
+    if (!req.user) {
+      sendResponse(res, ResponseStatus.UNAUTHORIZED, 'User not authenticated')
+      return
+    }
+    const hederaAccount = await prisma.hederaAccount.findUnique({ where: { userId: req.user.id } })
+    const filters = req.query as unknown as TMarketplaceFilters
+    if (!hederaAccount) {
+      sendResponse(res, ResponseStatus.NOT_FOUND, 'Hedera account not found for user')
+      return
+    }
+    const nftService = new NftService(hederaAccount)
+    const marketplaceNfts = await nftService.getMarketplace(filters)
+    sendResponse(res, ResponseStatus.SUCCESS, 'Marketplace NFTs retrieved successfully', marketplaceNfts)
+  } catch (error) {
+    const hederaErrorDetails = hederaError(error)
+    if (hederaErrorDetails) {
+      sendResponse(res, ResponseStatus.BAD_REQUEST, hederaErrorDetails)
+      return
+    }
+    sendResponse(res, ResponseStatus.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR)
+  }
+})
+
 router.get('/:tokenId', async (req, res) => {
   try {
     if (!req.user) {
@@ -91,5 +142,6 @@ router.get('/:tokenId', async (req, res) => {
     else sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
   }
 })
+
 
 export default router

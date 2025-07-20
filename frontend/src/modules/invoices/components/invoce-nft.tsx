@@ -2,21 +2,12 @@ import { useNftInfo } from '../api/hooks'
 import { useMe } from '@/api/hooks'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Coins, DollarSign, ExternalLinkIcon, Hash } from 'lucide-react'
-import { InvoiceCoverImg } from './invoice-cover-img'
-import { timeAgoFromTimestamp } from '@/lib/utils'
+import { Coins, DollarSign, Hash } from 'lucide-react'
 import { MintInvoiceDialog } from './mint-invoice-dialog'
+import { InvoiceCard } from './invoice-card'
 
 interface IInvoiceNft {
   tokenId: string
-}
-const decodeBase64 = (input: string): string => {
-  try {
-    return atob(input)
-  } catch (error) {
-    console.error('Failed to decode base64 string:', error)
-    return ''
-  }
 }
 export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
   const { data: token, isLoading } = useNftInfo(tokenId)
@@ -77,54 +68,12 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
           </p>
         ) : (
           token?.data.nfts.map((nft) => {
-            const meta = decodeBase64(nft.metadata)
             return (
-              <Card
-                className="border shadow-sm rounded-2xl overflow-hidden"
+              <InvoiceCard
                 key={`${nft.serial_number}-${token.data.details.token_id}`}
-              >
-                <div className="h-40 w-full bg-muted relative">
-                  <InvoiceCoverImg cid={meta} alt={token.data.details.name} />
-                </div>
-
-                <CardHeader>
-                  <CardTitle className="text-base font-semibold truncate flex items-center justify-between">
-                    <p>Name:</p>
-                    <p className="flex gap-1 items-center">
-                      <span>{token.data.details.name}</span>
-                      <a
-                        href={`https://explorer.arkhia.io/testnet/token/${tokenId}/${nft.serial_number}`}
-                        className="ml-2 text-primary"
-                        target="_blank"
-                      >
-                        <ExternalLinkIcon size={16} />
-                      </a>
-                    </p>
-                  </CardTitle>
-                </CardHeader>
-
-                <CardContent className="text-sm text-muted-foreground space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-foreground">CID</span>
-                    <a
-                      href={`https://ipfs.io/ipfs/${meta}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="truncate text-blue-600 hover:underline"
-                    >
-                      {meta.slice(0, 10)}...
-                    </a>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-foreground">Minted</span>
-                    <span>{timeAgoFromTimestamp(nft.created_timestamp)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-foreground">Serial Number</span>
-                    <span>{nft.serial_number}</span>
-                  </div>
-                </CardContent>
-              </Card>
+                nft={nft}
+                tokenDetials={token.data.details}
+              />
             )
           })
         )}

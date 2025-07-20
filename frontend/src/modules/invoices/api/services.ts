@@ -10,7 +10,7 @@ interface IAccount {
   hbars: string
   tokens: ITokenInfo[]
 }
-interface IMintedNftInfo {
+export interface IMintedNftInfo {
   account_id: string
   created_timestamp: string
   delegating_spender: string | null
@@ -22,7 +22,7 @@ interface IMintedNftInfo {
   token_id: string
 }
 
-interface INftTemplateInfo {
+export interface INftTemplateInfo {
   admin_key: string | null
   auto_renew_account: string
   auto_renew_period: number
@@ -63,6 +63,33 @@ interface IMintInvoiceNftRequest {
   tokenId: string
   metadataCID: string
 }
+
+interface IAddToMarketplaceRequest {
+  tokenId: string
+  serialNumber: number
+}
+
+export interface IMarketplaceNftFilters {
+  limit?: number
+  offset?: number
+  tokenId?: string | undefined
+  serialNumber?: number | undefined
+  userId?: string | undefined
+}
+
+export interface IMarketplaceNft {
+  tokenId: string
+  serialNumber: number
+  userId: string
+  id: string
+  createdAt: string
+  updatedAt: string
+  metadata: string
+  forSale: boolean
+  verified: boolean
+  verificationEmail: string
+}
+
 export const globalServices = {
   getAccount: async () => {
     return (await axios.get<IResponse<IAccount>>('/api/user/account')).data.data
@@ -75,5 +102,20 @@ export const globalServices = {
   },
   getInvoiceNftInfo: async (tokenId: string) => {
     return (await axios.get<IResponse<IInvoiceInfo>>(`/api/nft/${tokenId}`)).data
+  },
+  addToMarketplace: async (data: IAddToMarketplaceRequest) => {
+    return (await axios.post<IResponse<unknown>>(`/api/nft/marketplace`, { ...data })).data
+  },
+  getMarketplaceNfts: async (filters?: IMarketplaceNftFilters) => {
+    const params = new URLSearchParams()
+    if (filters) {
+      let key: keyof IMarketplaceNftFilters
+      for (key in filters) {
+        if (filters[key] !== undefined) params.append(key, String(filters[key]))
+      }
+    }
+    return (
+      await axios.get<IResponse<IMarketplaceNft[]>>(`/api/nft/marketplace?${params.toString()}`)
+    ).data.data
   },
 }

@@ -1,3 +1,4 @@
+import { Marketplace } from '@/modules/marketplace'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(app)/marketplace/')({
@@ -5,5 +6,5 @@ export const Route = createFileRoute('/(app)/marketplace/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/(app)/marketplace/"!</div>
+  return <Marketplace />
 }
