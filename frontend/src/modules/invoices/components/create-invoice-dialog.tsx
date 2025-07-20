@@ -9,11 +9,22 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useCreateInvoice } from '../api/hooks'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 export const CreateInvoiceDialog = () => {
-  const { mutate, isPending } = useCreateInvoice()
+  const { mutateAsync, isPending } = useCreateInvoice()
+  const [open, setOpen] = useState(false)
+  const handleSubmit = async () => {
+    try {
+      await mutateAsync()
+      setOpen(false)
+    } catch (error) {
+      toast.error('Failed to create invoice')
+    }
+  }
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button isLoading={isPending} DefaultIcon={PlusCircleIcon}>
           <CoreText variant="content" className="flex items-center gap-2">
@@ -31,7 +42,7 @@ export const CreateInvoiceDialog = () => {
           </CoreText>
         </DialogDescription>
         <DialogFooter>
-          <Button isLoading={isPending} onClick={() => mutate()}>
+          <Button isLoading={isPending} onClick={handleSubmit}>
             <span>Create</span>
           </Button>
         </DialogFooter>

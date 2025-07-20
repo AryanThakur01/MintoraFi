@@ -27,7 +27,7 @@ export const InvoiceCoverImg: React.FC<Props> = ({ cid, alt }) => {
     }
 
     checkFileType()
-  }, [cid])
+  }, [cid, alt])
 
   if (type === null) {
     return <div className="w-full h-full bg-muted animate-pulse" /> // loading placeholder

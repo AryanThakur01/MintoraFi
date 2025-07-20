@@ -79,7 +79,10 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
           token?.data.nfts.map((nft) => {
             const meta = decodeBase64(nft.metadata)
             return (
-              <Card className="border shadow-sm rounded-2xl overflow-hidden">
+              <Card
+                className="border shadow-sm rounded-2xl overflow-hidden"
+                key={`${nft.serial_number}-${token.data.details.token_id}`}
+              >
                 <div className="h-40 w-full bg-muted relative">
                   <InvoiceCoverImg cid={meta} alt={token.data.details.name} />
                 </div>
@@ -102,7 +105,7 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
 
                 <CardContent className="text-sm text-muted-foreground space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-foreground">CID:</span>
+                    <span className="font-medium text-foreground">CID</span>
                     <a
                       href={`https://ipfs.io/ipfs/${meta}`}
                       target="_blank"
@@ -113,11 +116,11 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
                     </a>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-foreground">Minted On:</span>
+                    <span className="font-medium text-foreground">Minted</span>
                     <span>{timeAgoFromTimestamp(nft.created_timestamp)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-foreground">Serial Number:</span>
+                    <span className="font-medium text-foreground">Serial Number</span>
                     <span>{nft.serial_number}</span>
                   </div>
                 </CardContent>
