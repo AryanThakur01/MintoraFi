@@ -84,9 +84,10 @@ router.post('/marketplace', validateBody(SMarketplaceNft), async (req, res) => {
     }
     const { tokenId, serialNumber } = req.body as TMarketplaceNft
     const nftService = new NftService(hederaAccount)
-    await nftService.toggleMarketplace(tokenId, serialNumber, req.user.id)
+    const newState = await nftService.toggleMarketplace(tokenId, serialNumber, req.user.id)
 
-    sendResponse(res, ResponseStatus.SUCCESS, 'Marketplace NFTs retrieved successfully', {})
+    const message = newState.forSale ? 'Created NFT in marketplace' : 'Removed NFT from marketplace'
+    sendResponse(res, ResponseStatus.SUCCESS, message, {})
   } catch (error) {
     const hederaErrorDetails = hederaError(error)
     if (hederaErrorDetails) {

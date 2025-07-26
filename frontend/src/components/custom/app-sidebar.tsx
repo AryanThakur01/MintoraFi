@@ -9,7 +9,13 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar'
-import { CoinsIcon, FilesIcon, FileTextIcon, LayoutDashboardIcon } from 'lucide-react'
+import {
+  CoinsIcon,
+  FilesIcon,
+  FileTextIcon,
+  LayoutDashboardIcon,
+  ShoppingBasketIcon,
+} from 'lucide-react'
 import { SiteHeader } from './site-header'
 import { NavMain } from './nav-main'
 import { Link } from '@tanstack/react-router'
@@ -29,7 +35,7 @@ const data = {
     {
       title: 'Marketplace',
       url: '/marketplace',
-      icon: FileTextIcon,
+      icon: ShoppingBasketIcon,
     },
     {
       title: 'Invoices',
