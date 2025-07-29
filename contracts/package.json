@@ -1,0 +1,25 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "contract:compile": "rm -rf build && solcjs --bin -o build contracts/nft.sol",
+    "contract:deploy": "pnpm run contract:compile && tsx app.ts",
+    "test": "tsx ./test/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "@hashgraph/sdk": "^2.69.0",
+    "@types/dotenv": "^8.2.3",
+    "dotenv": "^17.2.1",
+    "solc": "^0.8.30",
+    "tsx": "^4.20.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  }
+}
