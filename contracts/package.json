@@ -6,7 +6,8 @@
   "scripts": {
     "contract:compile": "rm -rf build && solcjs --bin -o build contracts/nft.sol",
     "contract:deploy": "pnpm run contract:compile && tsx app.ts",
-    "test": "tsx ./test/index.ts"
+    "test": "tsx ./test/index.ts",
+    "contract:livelogs": "tsx live-logs.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,8 @@
     "tsx": "^4.20.3"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.4.0"
+    "@openzeppelin/contracts": "^5.4.0",
+    "ethers": "^6.15.0",
+    "node-fetch": "^3.3.2"
   }
 }

@@ -8,7 +8,7 @@ import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 // all amounts are in tinybars
 contract NFT is HederaTokenService {
   mapping(bytes32 => uint256) public prices;
-  event Debug(uint256 price, uint256 sentValue, uint256 senderBalance, address owner, address buyer);
+  event NFTPurchased(address indexed token, uint256 serial, address indexed buyer, uint256 price, uint256 value);
 
   function getKey(address tokenAddress, uint256 serialNumber) internal pure returns (bytes32) {
     return keccak256(abi.encodePacked(tokenAddress, serialNumber));
@@ -43,19 +43,20 @@ contract NFT is HederaTokenService {
     bytes32 key = getKey(tokenAddress, serialNumber);
     uint256 price = prices[key];
     address owner = IERC721(tokenAddress).ownerOf(serialNumber);
+    emit NFTPurchased(tokenAddress, serialNumber, msg.sender, price, msg.value); // Event Emitter
 
     // checks for the nft
     require(msg.sender.balance >= price && price == msg.value && owner != msg.sender, "Insufficient payment or you are already the owner");
 
     // Pay fees to the receiver
     (bool sent, ) = owner.call{value: msg.value}("");
-    // require(sent, "Failed to send tinybars");
-    //
-    // // Transfer the NFT to the buyer
-    // IERC721(tokenAddress).transferFrom(owner, msg.sender, serialNumber);
-    //
-    // // Clear the price after purchase
-    // delete prices[key];
+    if (!sent) return sent;
+
+    // Transfer the NFT to the buyer
+    IERC721(tokenAddress).transferFrom(owner, msg.sender, serialNumber);
+
+    // Clear the price after purchase
+    delete prices[key];
 
     return true;
   }

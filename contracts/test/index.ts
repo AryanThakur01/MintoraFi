@@ -119,16 +119,18 @@ async function associateTokenToPurchaser(
 // Purchase NFT function
 async function purchaseNft(
     purchaser: {accountId: AccountId, accountKey: PrivateKey},
-    contractId: ContractId, tokenAddress: string, payableHbars: number) {
+    contractId: ContractId, token: {address: string, serialNumber: number},
+    payableHbars: number) {
   try {
-    await associateTokenToPurchaser(purchaser, tokenAddress);
+    await associateTokenToPurchaser(purchaser, token.address);
   } catch (error) {
     console.error(
         'Association error proceeding forward. TODO: Need better error handling for already associated token');
   }
   // Transaction to set price for an NFT
-  const purchaseNftParam =
-      new ContractFunctionParameters().addAddress(tokenAddress).addUint256(1)
+  const purchaseNftParam = new ContractFunctionParameters()
+                               .addAddress(token.address)
+                               .addUint256(token.serialNumber)
 
   const contractQuery = new ContractExecuteTransaction()
                             .setContractId(contractId)
@@ -160,7 +162,7 @@ async function testAllMethods(contractAddress: string,
   // await allowContractToTransferNft(owner, token, contractId);
   // await setPriceForNft(owner, token, contractId, 17);
   // await getPriceForNft(contractId, token);
-  await purchaseNft(owner, contractId, token.address, 17);
+  await purchaseNft(owner, contractId, token, 17);
 }
 
 async function main() {
