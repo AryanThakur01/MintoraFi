@@ -39,12 +39,12 @@ export class HederaAccountService {
     return accountInfo
   }
 
-  async getNftInfo(tokenId: string): Promise<{ details: INftTemplateInfo; nfts: IMintedNftInfo[] }> {
+  async getNftInfo(tokenId: string, owner?: string): Promise<{ details: INftTemplateInfo; nfts: IMintedNftInfo[] }> {
     const { data: details } = await this.axios.get<INftTemplateInfo>(`/api/v1/tokens/${tokenId}`)
     const {
       data: { nfts },
     } = await this.axios.get<{ nfts: IMintedNftInfo[] }>(`/api/v1/tokens/${tokenId}/nfts`)
-    return { details, nfts }
+    return { details, nfts: owner ? nfts.filter((nft) => nft.account_id === owner) : nfts }
   }
 
   parseTokenInfoFromRelationsMap(tokenRelationships: Map<string, TokenRelationship>): ITokenInfo[] {

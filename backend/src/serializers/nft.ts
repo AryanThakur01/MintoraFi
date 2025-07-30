@@ -20,3 +20,8 @@ export const SMarketplaceFilters = z.object({
   offset: z.number().int().min(0).default(0),
 }).strip()
 export type TMarketplaceFilters = z.infer<typeof SMarketplaceFilters>
+
+export const SValidateNftFilters = z.object({
+  mineOnly: z.string().optional(),
+}).strip()
+export type TValidateNftFilters = z.infer<typeof SValidateNftFilters>

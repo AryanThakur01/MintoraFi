@@ -34,10 +34,10 @@ export const useMintInvoiceNft = () => {
   })
 }
 
-export const useNftInfo = (tokenId: string) => {
+export const useNftInfo = (tokenId: string, filters?: { mineOnly?: boolean }) => {
   return useQuery({
     queryKey: ['nft-info', tokenId],
-    queryFn: () => globalServices.getInvoiceNftInfo(tokenId),
+    queryFn: () => globalServices.getInvoiceNftInfo(tokenId, filters),
     staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: !!tokenId,
   })

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import winston from 'winston'
 import { settings } from '../../settings.ts'
 

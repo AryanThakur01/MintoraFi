@@ -100,8 +100,11 @@ export const globalServices = {
   mintInvoiceNft: async (data: IMintInvoiceNftRequest) => {
     return (await axios.post<IResponse<unknown>>(`/api/nft/mint`, data)).data
   },
-  getInvoiceNftInfo: async (tokenId: string) => {
-    return (await axios.get<IResponse<IInvoiceInfo>>(`/api/nft/${tokenId}`)).data
+  getInvoiceNftInfo: async (tokenId: string, filters?: { mineOnly?: boolean }) => {
+    const params = new URLSearchParams()
+    if (filters?.mineOnly) params.append('mineOnly', String(filters.mineOnly))
+    return (await axios.get<IResponse<IInvoiceInfo>>(`/api/nft/${tokenId}?${params.toString()}`))
+      .data
   },
   addToMarketplace: async (data: IAddToMarketplaceRequest) => {
     return (await axios.post<IResponse<unknown>>(`/api/nft/marketplace`, { ...data })).data

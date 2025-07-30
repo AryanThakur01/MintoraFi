@@ -6,7 +6,7 @@ import { prisma } from '../utils/prisma'
 import { hederaError } from '../utils/hedera'
 import { HederaAccountService } from '../services/hedera/account'
 import { validateBody, validateQuery } from '../utils/validators'
-import { SMarketplaceFilters, SMarketplaceNft, SMintNft, TMarketplaceFilters, TMarketplaceNft, TMintNft } from '../serializers/nft'
+import { SMarketplaceFilters, SMarketplaceNft, SMintNft, SValidateNftFilters, TMarketplaceFilters, TMarketplaceNft, TMintNft, TValidateNftFilters } from '../serializers/nft'
 
 const router = express.Router()
 
@@ -123,12 +123,13 @@ router.get('/marketplace', validateQuery(SMarketplaceFilters), async (req, res) 
   }
 })
 
-router.get('/:tokenId', async (req, res) => {
+router.get('/:tokenId', validateQuery(SValidateNftFilters), async (req, res) => {
   try {
     if (!req.user) {
       sendResponse(res, ResponseStatus.UNAUTHORIZED, 'Session expired or user not authenticated')
       return
     }
+    const { mineOnly } = req.query as TValidateNftFilters
     const { tokenId } = req.params
     const hederaAccount = await prisma.hederaAccount.findUnique({ where: { userId: req.user.id } })
     if (!hederaAccount) {
@@ -136,7 +137,7 @@ router.get('/:tokenId', async (req, res) => {
       return
     }
     const accountService = new HederaAccountService()
-    const nftInfo = await accountService.getNftInfo(tokenId)
+    const nftInfo = await accountService.getNftInfo(tokenId, mineOnly === 'true' ? hederaAccount.accountId : undefined)
     sendResponse(res, ResponseStatus.SUCCESS, 'NFT information retrieved successfully', nftInfo)
   } catch (error) {
     if (error instanceof Error) sendResponse(res, ResponseStatus.BAD_REQUEST, error.message)

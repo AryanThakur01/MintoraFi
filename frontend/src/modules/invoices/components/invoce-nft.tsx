@@ -10,7 +10,7 @@ interface IInvoiceNft {
   tokenId: string
 }
 export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
-  const { data: token, isLoading } = useNftInfo(tokenId)
+  const { data: token, isLoading } = useNftInfo(tokenId, { mineOnly: true })
   const { data: me, isLoading: isMeLoading } = useMe()
 
   return (
