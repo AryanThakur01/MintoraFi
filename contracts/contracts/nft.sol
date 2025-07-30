@@ -33,6 +33,17 @@ contract NFT is HederaTokenService {
     prices[key] = price;
     return prices[key];
   }
+
+  function removePrice(address tokenAddress, uint256 serialNumber) public returns (bool) {
+    require(
+        IERC721(tokenAddress).ownerOf(serialNumber) == msg.sender,
+        "Caller is not the owner of the NFT"
+    );
+
+    bytes32 key = getKey(tokenAddress, serialNumber);
+    delete prices[key];
+    return true;
+  }
   
   function getPriceByKey(address tokenAddress, uint256 serialNumber) public view returns (uint256) {
     bytes32 key = getKey(tokenAddress, serialNumber);

@@ -42,6 +42,10 @@ export const InvoiceCard: React.FC<IInvoiceCardProps> = ({ nft }) => {
 
       <CardContent className="text-sm text-muted-foreground space-y-1">
         <div className="flex items-center justify-between">
+          <span className="font-medium text-foreground">Price</span>
+          <span>{nft.costInHbars} ħ</span>
+        </div>
+        <div className="flex items-center justify-between">
           <span className="font-medium text-foreground">CID</span>
           <a
             href={`https://ipfs.io/ipfs/${meta}`}

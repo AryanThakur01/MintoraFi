@@ -82,13 +82,14 @@ router.post('/marketplace', validateBody(SMarketplaceNft), async (req, res) => {
       sendResponse(res, ResponseStatus.NOT_FOUND, 'Hedera account not found for user')
       return
     }
-    const { tokenId, serialNumber } = req.body as TMarketplaceNft
+    const { tokenId, serialNumber, priceInHbars } = req.body as TMarketplaceNft
     const nftService = new NftService(hederaAccount)
-    const newState = await nftService.toggleMarketplace(tokenId, serialNumber, req.user.id)
+    const newState = await nftService.toggleMarketplace(tokenId, serialNumber, req.user.id, priceInHbars)
 
     const message = newState.forSale ? 'Created NFT in marketplace' : 'Removed NFT from marketplace'
     sendResponse(res, ResponseStatus.SUCCESS, message, {})
   } catch (error) {
+    console.log(error)
     const hederaErrorDetails = hederaError(error)
     if (hederaErrorDetails) {
       sendResponse(res, ResponseStatus.BAD_REQUEST, hederaErrorDetails)
@@ -113,6 +114,17 @@ router.get('/marketplace', validateQuery(SMarketplaceFilters), async (req, res) 
     const nftService = new NftService(hederaAccount)
     const marketplaceNfts = await nftService.getMarketplace(filters)
     sendResponse(res, ResponseStatus.SUCCESS, 'Marketplace NFTs retrieved successfully', marketplaceNfts)
+  } catch (error) {
+    const hederaErrorDetails = hederaError(error)
+    if (hederaErrorDetails) {
+      sendResponse(res, ResponseStatus.BAD_REQUEST, hederaErrorDetails)
+      return
+    }
+    sendResponse(res, ResponseStatus.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR)
+  }
+})
+router.post('/marketplace/purchase', validateBody(SMarketplaceNft), async (req, res) => {
+  try {
   } catch (error) {
     const hederaErrorDetails = hederaError(error)
     if (hederaErrorDetails) {

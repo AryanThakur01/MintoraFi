@@ -32,6 +32,7 @@ model InvoiceNftMarketplace {
   metadata          String
   tokenId           String
   serialNumber      Int
+  costInHbars       Float
 
   forSale           Boolean  @default(false)
   verified          Boolean  @default(false)

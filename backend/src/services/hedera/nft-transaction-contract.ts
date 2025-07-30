@@ -30,13 +30,9 @@ export class NftTransactionContract {
   private client: Client;
   private contractId: ContractId;
 
-  constructor(client: Client = hederaClient, contractAddress?: string) {
+  constructor(client: Client = hederaClient, contractAddress: string) {
     this.client = client;
-    this.contractId = ContractId.fromEvmAddress(
-      0,
-      0,
-      contractAddress || process.env.CONTRACT_ADDRESS || ''
-    );
+    this.contractId = ContractId.fromEvmAddress(0, 0, contractAddress);
   }
 
   private _getTokenId(tokenAddress: string): TokenId {

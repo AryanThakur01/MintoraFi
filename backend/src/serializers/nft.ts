@@ -9,6 +9,7 @@ export type TMintNft = z.infer<typeof SMintNft>
 export const SMarketplaceNft = z.object({
   tokenId: z.string().min(1, 'Token ID is required'),
   serialNumber: z.number().int().min(0, 'Serial number must be a non-negative integer'),
+  priceInHbars: z.number().gt(0, 'Price must be a positive integer'),
 }).strip()
 export type TMarketplaceNft = z.infer<typeof SMarketplaceNft>
 

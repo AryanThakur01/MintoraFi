@@ -67,6 +67,7 @@ interface IMintInvoiceNftRequest {
 interface IAddToMarketplaceRequest {
   tokenId: string
   serialNumber: number
+  priceInHbars: number
 }
 
 export interface IMarketplaceNftFilters {
@@ -88,6 +89,7 @@ export interface IMarketplaceNft {
   forSale: boolean
   verified: boolean
   verificationEmail: string
+  costInHbars: number
 }
 
 export const globalServices = {

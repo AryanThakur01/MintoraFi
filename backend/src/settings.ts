@@ -31,6 +31,7 @@ const getSettings = (): ISettings => {
     apillonUrl: String(process.env.APILLON_URL),
     apillonAuthorization: String(process.env.APILLON_AUTHORIZATION),
     apillonInvoiceBucketUUID: '4229d4e6-ab26-4871-8047-28a217135084',
+    hederaNftTransactionContractAddress: String(process.env.HEDERA_NFT_TRANSACTION_CONTRACT_ADDRESS ?? ''),
   }
 }
 

@@ -1,16 +1,21 @@
-import { Client, Hbar } from '@hashgraph/sdk'
+import { AccountId, Client, Hbar, PrivateKey } from '@hashgraph/sdk'
 import { settings } from '../settings'
 import { Network } from '../data/enumerators'
 
-const hederaClient = settings.network === Network.Testnet ? Client.forTestnet() : Client.forMainnet()
-hederaClient
-  .setDefaultMaxQueryPayment(new Hbar(20))
-  .setDefaultMaxTransactionFee(new Hbar(20))
-  .setRequestTimeout(30_000)
-  .setMinBackoff(250)
-  .setMaxBackoff(8_000)
-  .setAutoValidateChecksums(true)
-  .setOperator(settings.hederaOperatorId, settings.hederaOperatorPvtKey)
+const generateHederaClient = (accountId: string | AccountId, privateKey: string | PrivateKey): Client => {
+  const network = settings.network
+  const hederaClient = network === Network.Testnet ? Client.forTestnet() : Client.forMainnet()
+  hederaClient
+    .setDefaultMaxQueryPayment(new Hbar(20))
+    .setDefaultMaxTransactionFee(new Hbar(20))
+    .setRequestTimeout(30_000)
+    .setMinBackoff(250)
+    .setMaxBackoff(8_000)
+    .setAutoValidateChecksums(true)
+    .setOperator(accountId, privateKey)
+  return hederaClient
+}
+const hederaClient = generateHederaClient(settings.hederaOperatorId, settings.hederaOperatorPvtKey)
 
 const hederaError = (error: unknown): string | undefined => {
   if (typeof error === 'object' && error !== null) {
@@ -64,4 +69,4 @@ const hederaError = (error: unknown): string | undefined => {
   }
 }
 
-export { hederaClient, hederaError }
+export { hederaClient, hederaError, generateHederaClient }

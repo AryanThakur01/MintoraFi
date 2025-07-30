@@ -17,4 +17,5 @@ export interface ISettings {
   apillonUrl: string
   apillonAuthorization: string
   apillonInvoiceBucketUUID: string
+  hederaNftTransactionContractAddress: string
 }

@@ -1,20 +1,25 @@
-import { PrivateKey, TokenCreateTransaction, TokenMintTransaction, TokenSupplyType, TokenType, TransactionReceipt } from '@hashgraph/sdk'
-import { HederaAccount, InvoiceNftMarketplace } from '@prisma/client'
-import { hederaClient } from '../../utils/hedera'
+import { AccountId, PrivateKey, TokenCreateTransaction, TokenId, TokenMintTransaction, TokenSupplyType, TokenType, TransactionReceipt } from '@hashgraph/sdk'
+import { HederaAccount, InvoiceNftMarketplace, User } from '@prisma/client'
+import { generateHederaClient, hederaClient } from '../../utils/hedera'
 import { settings } from '../../settings'
 import { TokenName, TokenSymbol } from '../../data/enumerators'
 import { HederaAccountService } from './account'
 import { prisma } from '../../utils/prisma'
 import { TMarketplaceFilters, TMarketplaceNft } from '../../serializers/nft'
+import { NftTransactionContract } from './nft-transaction-contract'
 
 export class NftService extends HederaAccountService {
   private hederaAccount: HederaAccount
   private supplyKey: PrivateKey
+  private nftTransactionContract: NftTransactionContract
 
   constructor(hederaAccount: HederaAccount) {
     super()
     this.supplyKey = PrivateKey.fromStringDer(settings.hederaSupplyKey)
     this.hederaAccount = hederaAccount
+
+    const accountClient = generateHederaClient(hederaAccount.accountId, hederaAccount.privateKey)
+    this.nftTransactionContract = new NftTransactionContract(accountClient, settings.hederaNftTransactionContractAddress)
   }
 
   async createNft(): Promise<TransactionReceipt> {
@@ -53,7 +58,7 @@ export class NftService extends HederaAccountService {
     return mintNftTxReceipt
   }
 
-  async toggleMarketplace(tokenId: string, serial_number: number, userId: string): Promise<InvoiceNftMarketplace> {
+  async toggleMarketplace(tokenId: string, serial_number: number, userId: string, costInHbars: number): Promise<InvoiceNftMarketplace> {
     const nftInfo = await this.getNftInfo(tokenId)
     const currentNft = nftInfo.nfts.find((nft) => nft.serial_number === serial_number)
     if (!currentNft) throw new Error('NFT not found')
@@ -64,15 +69,23 @@ export class NftService extends HederaAccountService {
           tokenId,
           serialNumber: currentNft.serial_number
         }
-      }
+      },
+      select: { forSale: true }
     })
+    if (!previousInvoice || !previousInvoice.forSale) {
+      const tokenAddress = TokenId.fromString(tokenId).toSolidityAddress()
+      const account = {accountId: AccountId.fromString(this.hederaAccount.accountId), accountKey: PrivateKey.fromStringDer(this.hederaAccount.privateKey)}
+      const token = {address: tokenAddress, serialNumber: serial_number}
+      await this.nftTransactionContract.setPriceForNft(account, token, costInHbars)
+    }
     const invoice = await prisma.invoiceNftMarketplace.upsert({
       create: {
         userId,
         tokenId,
         serialNumber: currentNft.serial_number,
         metadata: currentNft.metadata,
-        forSale: !previousInvoice?.forSale
+        forSale: !previousInvoice?.forSale,
+        costInHbars: costInHbars
       },
       update: {
         forSale: !previousInvoice?.forSale,
