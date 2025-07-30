@@ -63,3 +63,15 @@ export const useMarketplaceNfts = (filters?: IMarketplaceNftFilters) => {
     retry: false,
   })
 }
+
+export const usePurchaseNft = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: ['purchase-nft'],
+    mutationFn: globalServices.purchaseMarketplaceNft,
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.invalidateQueries({ queryKey: ['marketplace-nfts'] })
+    },
+  })
+}

@@ -1,9 +1,12 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { InvoiceCoverImg } from '../invoices/components/invoice-cover-img'
-import { ExternalLinkIcon } from 'lucide-react'
+import { ExternalLinkIcon, Loader2 } from 'lucide-react'
 import { timeAgoFromTimestamp } from '@/lib/utils'
 import { useMemo } from 'react'
 import type { IMarketplaceNft } from '../invoices/api/services'
+import { usePurchaseNft } from '../invoices/api/hooks'
+import { Button } from '@/components/ui/button'
+import { useMe } from '@/api/hooks'
 
 interface IInvoiceCardProps {
   nft: IMarketplaceNft
@@ -17,8 +20,10 @@ const decodeBase64 = (input: string): string => {
   }
 }
 export const InvoiceCard: React.FC<IInvoiceCardProps> = ({ nft }) => {
+  const {data: me}= useMe()
   const meta = useMemo(() => decodeBase64(nft.metadata), [nft.metadata])
-  return (
+  const {mutate, isPending} = usePurchaseNft()
+  return me && (
     <Card className="border shadow-sm rounded-2xl overflow-hidden">
       <div className="h-40 w-full bg-muted relative">
         <InvoiceCoverImg cid={meta} alt={nft.tokenId} />
@@ -66,6 +71,14 @@ export const InvoiceCard: React.FC<IInvoiceCardProps> = ({ nft }) => {
           <span className="font-medium text-foreground">Serial Number</span>
           <span>{nft.serialNumber}</span>
         </div>
+        <Button className='mt-4 w-full'
+          onClick={()=> mutate({ tokenId: nft.tokenId, serialNumber: nft.serialNumber })}
+          disabled={isPending || nft.userId === me.id}
+        >
+          {
+            nft.userId === me.id ? 'You own this NFT' :
+            isPending ? 'Purchasing...' : 'Purchase'}
+        </Button>
       </CardContent>
     </Card>
   )

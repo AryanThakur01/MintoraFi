@@ -6,7 +6,7 @@ import { prisma } from '../utils/prisma'
 import { hederaError } from '../utils/hedera'
 import { HederaAccountService } from '../services/hedera/account'
 import { validateBody, validateQuery } from '../utils/validators'
-import { SMarketplaceFilters, SMarketplaceNft, SMintNft, SValidateNftFilters, TMarketplaceFilters, TMarketplaceNft, TMintNft, TValidateNftFilters } from '../serializers/nft'
+import { SMarketplaceFilters, SMarketplaceNft, SMintNft, SPurchaseNft, SValidateNftFilters, TMarketplaceFilters, TMarketplaceNft, TMintNft, TPurchaseNft, TValidateNftFilters } from '../serializers/nft'
 
 const router = express.Router()
 
@@ -123,8 +123,22 @@ router.get('/marketplace', validateQuery(SMarketplaceFilters), async (req, res) 
     sendResponse(res, ResponseStatus.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR)
   }
 })
-router.post('/marketplace/purchase', validateBody(SMarketplaceNft), async (req, res) => {
+
+router.post('/marketplace/purchase', validateBody(SPurchaseNft), async (req, res) => {
   try {
+    if (!req.user) {
+      sendResponse(res, ResponseStatus.UNAUTHORIZED, 'User not authenticated')
+      return
+    }
+    const hederaAccount = await prisma.hederaAccount.findUnique({ where: { userId: req.user.id } })
+    if (!hederaAccount) {
+      sendResponse(res, ResponseStatus.NOT_FOUND, 'Hedera account not found for user')
+      return
+    }
+    const { tokenId, serialNumber } = req.body as TPurchaseNft
+    const nftService = new NftService(hederaAccount)
+    const purchaseResult = await nftService.purchaseNft(tokenId, serialNumber, req.user.id)
+    sendResponse(res, ResponseStatus.SUCCESS, 'NFT purchased successfully', purchaseResult)
   } catch (error) {
     const hederaErrorDetails = hederaError(error)
     if (hederaErrorDetails) {
@@ -134,6 +148,7 @@ router.post('/marketplace/purchase', validateBody(SMarketplaceNft), async (req, 
     sendResponse(res, ResponseStatus.BAD_REQUEST, ResponseMessage.INTERNAL_SERVER_ERROR)
   }
 })
+
 
 router.get('/:tokenId', validateQuery(SValidateNftFilters), async (req, res) => {
   try {

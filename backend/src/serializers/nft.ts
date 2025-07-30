@@ -26,3 +26,9 @@ export const SValidateNftFilters = z.object({
   mineOnly: z.string().optional(),
 }).strip()
 export type TValidateNftFilters = z.infer<typeof SValidateNftFilters>
+
+export const SPurchaseNft = z.object({
+  tokenId: z.string().min(1, 'Token ID is required'),
+  serialNumber: z.number().int().min(0, 'Serial number must be a non-negative integer'),
+})
+export type TPurchaseNft = z.infer<typeof SPurchaseNft>

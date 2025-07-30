@@ -101,6 +101,28 @@ export class NftService extends HederaAccountService {
     return invoice
   }
 
+  async purchaseNft(tokenId: string, serialNumber: number, buyerId: string): Promise<TransactionReceipt> {
+    const tokenAddress = TokenId.fromString(tokenId).toSolidityAddress()
+    const account = {accountId: AccountId.fromString(this.hederaAccount.accountId), accountKey: PrivateKey.fromStringDer(this.hederaAccount.privateKey)}
+    const token = {address: tokenAddress, serialNumber: serialNumber}
+    const nft = await prisma.invoiceNftMarketplace.findUnique({
+      where: {
+        userId_tokenId_serialNumber: {
+          userId: buyerId,
+          tokenId,
+          serialNumber
+        }
+      }
+    })
+    if (!nft || !nft.forSale) throw new Error('NFT not found or not for sale anymore')
+    const tx = await this.nftTransactionContract.purchaseNft(
+      account,
+      token,
+      nft?.costInHbars
+    )
+    return tx
+  }
+
   async getMarketplace(filter: TMarketplaceFilters): Promise<InvoiceNftMarketplace[]> {
     const { userId, tokenId, serialNumber, limit = 10, offset = 0 } = filter
     const nfts = await prisma.invoiceNftMarketplace.findMany({

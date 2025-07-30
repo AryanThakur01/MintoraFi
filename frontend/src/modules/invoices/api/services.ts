@@ -123,4 +123,7 @@ export const globalServices = {
       await axios.get<IResponse<IMarketplaceNft[]>>(`/api/nft/marketplace?${params.toString()}`)
     ).data.data
   },
+  purchaseMarketplaceNft: async (data: { tokenId: string; serialNumber: number }) => {
+    return (await axios.post<IResponse<unknown>>(`/api/nft/marketplace/purchase`, data)).data
+  },
 }
