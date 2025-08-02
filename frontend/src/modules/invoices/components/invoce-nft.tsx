@@ -1,4 +1,4 @@
-import { useAccount, useNftInfo } from '../api/hooks'
+import { useNftInfo } from '../api/hooks'
 import { useMe } from '@/api/hooks'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
