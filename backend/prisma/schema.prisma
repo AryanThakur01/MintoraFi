@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  name              String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  name                  String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  hederaAccount     HederaAccount?
-  sessions          Session[]
-  authenticity      Authenticity?
+  hederaAccount         HederaAccount?
+  sessions              Session[]
+  authenticity          Authenticity?
   invoiceNftMarketplace InvoiceNftMarketplace[]
+  unsettledInvoices     UnsettledInvoices[]
 }
 
 model InvoiceNftMarketplace {
@@ -43,6 +44,20 @@ model InvoiceNftMarketplace {
 
   user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([userId, tokenId, serialNumber]) // Ensure unique NFT per user
+}
+
+model UnsettledInvoices {
+  id                  String   @id @default(cuid())
+  realCostInHbars     Float
+  offeredCostInHbars  Float
+  isSettled           Boolean  @default(false)
+
+  tokenId             String
+  serialNumber        Int
+  settlerId           String
+
+  settler             User     @relation(fields: [settlerId], references: [id], onDelete: Cascade)
+  @@unique([tokenId, serialNumber, settlerId]) // Ensure unique unsettled invoice per token and settler
 }
 
 model Authenticity {

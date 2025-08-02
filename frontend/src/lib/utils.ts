@@ -25,3 +25,24 @@ export function timeAgoFromTimestamp(timestamp: string | number): string {
   if (diff < 31536000) return `${Math.floor(diff / 2592000)} months ago`
   return `${Math.floor(diff / 31536000)} years ago`
 }
+
+function decodeBase64(input: string): string {
+  try {
+    return atob(input)
+  } catch (error) {
+    console.error('Failed to decode base64 string:', error)
+    return ''
+  }
+}
+export function decodeMetadata(metadata: string): {
+  realPriceInHbars: number
+  imageMetadata: string
+} {
+  const decodedBase64 = decodeBase64(metadata)
+  const metadataSeperator = '::<SEP>::'
+  const [imageMetadata, realPriceInHbars] = decodedBase64.split(metadataSeperator)
+  return {
+    imageMetadata,
+    realPriceInHbars: parseFloat(realPriceInHbars),
+  }
+}

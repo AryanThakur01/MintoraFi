@@ -14,7 +14,7 @@ export const columns: ColumnDef<ITokenInfo>[] = [
         <div className="capitalize flex items-center">
           <span>{String(tokenId)}</span>
           <a
-            href={`https://explorer.arkhia.io/testnet/token/${tokenId}`}
+            href={`https://hashscan.io/testnet/token/${tokenId}`}
             className="ml-2 text-primary"
             target="_blank"
           >

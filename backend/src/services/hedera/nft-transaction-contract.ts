@@ -15,6 +15,7 @@ import {
   Client
 } from '@hashgraph/sdk'
 import { hederaClient } from '../../utils/hedera';
+import logger from '../../utils/logger/logger';
 
 export interface IAccount {
   accountId: AccountId;
@@ -150,7 +151,7 @@ export class NftTransactionContract {
     try {
       await this._associateTokenToPurchaser(purchaser, token.address);
     } catch (err) {
-      console.error('Association failed; may already be associated. Proceeding...');
+      logger.error('Account already associated with token, skipping association:');
     }
 
     const params = new ContractFunctionParameters()

@@ -66,7 +66,7 @@ export const AddToMarketplaceButton: React.FC<IAddToMarketplaceButton> = ({
               : 'Add this NFT to the marketplace for others to purchase.'}
           </DialogDescription>
         </DialogHeader>
-        <Label htmlFor="amount">Amount</Label>
+        <Label htmlFor="amount">Offered price (in ħ)</Label>
         <Input
           id="amount"
           name="amount"
@@ -93,6 +93,7 @@ export const AddToMarketplaceButton: React.FC<IAddToMarketplaceButton> = ({
     </Dialog>
   ) : (
     <Button
+      variant="destructive"
       className="w-full mt-4"
       onClick={handleAddToMarketplace}
       disabled={isAddingToMarketplace || isLoading || isRefetching}

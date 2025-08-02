@@ -60,6 +60,7 @@ interface IInvoiceInfo {
   nfts: IMintedNftInfo[]
 }
 interface IMintInvoiceNftRequest {
+  realPriceInHbars: number
   tokenId: string
   metadataCID: string
 }

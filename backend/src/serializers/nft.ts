@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const SMintNft = z.object({
   tokenId: z.string().min(1, 'Token ID is required'),
   metadataCID: z.string().min(1, 'Metadata CID is required'),
+  realPriceInHbars: z.number().min(0, 'Real price must be a non-negative integer'),
 })
 export type TMintNft = z.infer<typeof SMintNft>
 

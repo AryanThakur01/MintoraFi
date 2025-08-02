@@ -12,12 +12,15 @@ import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { useMintInvoiceNft } from '../api/hooks'
 import { useAvailableFiles } from '@/api/hooks'
+import { Input } from '@/components/ui/input'
+import { Label } from '@radix-ui/react-label'
 
 interface IMintInvoiceDialog {
   tokenId: string
 }
 
 export const MintInvoiceDialog: React.FC<IMintInvoiceDialog> = ({ tokenId }) => {
+  const [realPrice, setRealPrice] = useState<number>(0)
   const [dialogOpen, setDialogOpen] = useState(false)
   const { data: filesData, isLoading: isLoadingFileData } = useAvailableFiles()
   const [selectedCid, setSelectedCid] = useState<string | null>(null)
@@ -25,7 +28,7 @@ export const MintInvoiceDialog: React.FC<IMintInvoiceDialog> = ({ tokenId }) => 
 
   const mintInvoiceHandler = async () => {
     if (selectedCid) {
-      await mintInvoice({ tokenId, metadataCID: selectedCid })
+      await mintInvoice({ tokenId, metadataCID: selectedCid, realPriceInHbars: realPrice })
       setDialogOpen(false)
     }
   }
@@ -41,10 +44,10 @@ export const MintInvoiceDialog: React.FC<IMintInvoiceDialog> = ({ tokenId }) => 
         )}
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Select the image of your invoice to create nft</DialogTitle>
+            <DialogTitle>Fill The details to continue minting an invoice</DialogTitle>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-4">
             {selectedCid ? (
               <div className="w-full h-48 rounded-lg overflow-hidden border border-muted shadow-sm flex items-center justify-center">
                 <img
@@ -58,23 +61,47 @@ export const MintInvoiceDialog: React.FC<IMintInvoiceDialog> = ({ tokenId }) => 
                 <p className="text-muted-foreground">No image selected</p>
               </div>
             )}
-            <Select onValueChange={(val) => setSelectedCid(val)} value={selectedCid || ''}>
-              <SelectTrigger className="w-full">
-                <p className="text-ellipsis  overflow-hidden">
-                  {filesData?.data.data.items.find((file) => file.CID === selectedCid)?.name ??
-                    'Select a cover image to mint'}
-                </p>
-              </SelectTrigger>
-              <SelectContent>
-                {filesData?.data.data.items
-                  .filter((file) => file.contentType.startsWith('image/'))
-                  .map((file) => (
-                    <SelectItem key={file.uuid} value={file.CID}>
-                      {file.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+            <div className="grid gap-2">
+              <Label htmlFor="coverImage" className="text-sm font-medium">
+                Select Cover Image
+              </Label>
+              <Select
+                onValueChange={(val) => setSelectedCid(val)}
+                value={selectedCid || ''}
+                name="coverImage"
+              >
+                <SelectTrigger className="w-full" id="coverImage">
+                  <p className="text-ellipsis  overflow-hidden">
+                    {filesData?.data.data.items.find((file) => file.CID === selectedCid)?.name ??
+                      'Select a cover image to mint'}
+                  </p>
+                </SelectTrigger>
+                <SelectContent>
+                  {filesData?.data.data.items
+                    .filter((file) => file.contentType.startsWith('image/'))
+                    .map((file) => (
+                      <SelectItem key={file.uuid} value={file.CID}>
+                        {file.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="realPrice" className="text-sm font-medium">
+                Real Price (in HBAR)
+              </Label>
+              <Input
+                placeholder="e.g. 100"
+                type="number"
+                name="realPrice"
+                id="realPrice"
+                value={realPrice}
+                onChange={(e) => setRealPrice(Number(e.target.value))}
+                className="w-full"
+                min={0}
+              />
+            </div>
           </div>
 
           <Button

@@ -1,8 +1,5 @@
 import { useMe } from '@/api/hooks'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
@@ -24,7 +21,7 @@ export function SiteHeader() {
             <CoreText variant="bold" className="flex items-center gap-2">
               <span>{data.hederaAccount.accountId}</span>
               <a
-                href={`https://explorer.arkhia.io/testnet/account/${data.hederaAccount.accountId}`}
+                href={`https://hashscan.io/testnet/account/${data.hederaAccount.accountId}`}
                 target="_blank"
                 className="hover:text-primary"
               >
@@ -46,7 +43,7 @@ const UserAvatar = () => {
     return <Loader2 className="animate-spin h-6 w-6 text-gray-500 ml-auto" />
   return (
     <Popover>
-      <PopoverTrigger className="ml-auto">
+      <PopoverTrigger className="ml-auto cursor-pointer">
         <Avatar className="border-2">
           <AvatarImage
             src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data?.id}`}
@@ -55,7 +52,7 @@ const UserAvatar = () => {
           <AvatarFallback>ER</AvatarFallback>
         </Avatar>
       </PopoverTrigger>
-      <PopoverContent className="w-80 bg-muted border-2">
+      <PopoverContent className="w-80 bg-card border-border/50">
         <div>
           <div className="text-sm text-gray-500">Email</div>
           <div className="text-base font-medium">{data?.email}</div>

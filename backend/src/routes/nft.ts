@@ -37,7 +37,7 @@ router.post('/create', async (req, res) => {
 router.post('/mint', validateBody(SMintNft), async (req, res) => {
   try {
     const body = req.body as TMintNft
-    const { tokenId, metadataCID } = body
+    const { tokenId, metadataCID, realPriceInHbars } = body
     if (!req.user) {
       sendResponse(res, ResponseStatus.UNAUTHORIZED, 'User not authenticated')
       return
@@ -59,7 +59,7 @@ router.post('/mint', validateBody(SMintNft), async (req, res) => {
     }
 
     const nftService = new NftService(hederaAccount)
-    const nft = await nftService.mintNft(tokenId, metadataCID)
+    const nft = await nftService.mintNft(tokenId, metadataCID, realPriceInHbars)
     sendResponse(res, ResponseStatus.SUCCESS, 'NFT minted successfully', { nft })
   } catch (error) {
     const hederaErrorDetails = hederaError(error)
@@ -137,7 +137,7 @@ router.post('/marketplace/purchase', validateBody(SPurchaseNft), async (req, res
     }
     const { tokenId, serialNumber } = req.body as TPurchaseNft
     const nftService = new NftService(hederaAccount)
-    const purchaseResult = await nftService.purchaseNft(tokenId, serialNumber, req.user.id)
+    const purchaseResult = await nftService.purchaseNft(tokenId, serialNumber)
     sendResponse(res, ResponseStatus.SUCCESS, 'NFT purchased successfully', purchaseResult)
   } catch (error) {
     const hederaErrorDetails = hederaError(error)

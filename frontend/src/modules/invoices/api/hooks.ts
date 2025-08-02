@@ -72,6 +72,7 @@ export const usePurchaseNft = () => {
     onSuccess: (data) => {
       toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: ['marketplace-nfts'] })
+      queryClient.invalidateQueries({ queryKey: ['user-account'] })
     },
   })
 }

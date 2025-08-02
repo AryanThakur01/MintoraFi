@@ -1,8 +1,8 @@
-import { useNftInfo } from '../api/hooks'
+import { useAccount, useNftInfo } from '../api/hooks'
 import { useMe } from '@/api/hooks'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Coins, DollarSign, Hash } from 'lucide-react'
+import { Coins, DollarSign, HashIcon, MailboxIcon } from 'lucide-react'
 import { MintInvoiceDialog } from './mint-invoice-dialog'
 import { InvoiceCard } from './invoice-card'
 
@@ -10,7 +10,7 @@ interface IInvoiceNft {
   tokenId: string
 }
 export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
-  const { data: token, isLoading } = useNftInfo(tokenId, { mineOnly: true })
+  const { data: token, isLoading } = useNftInfo(tokenId)
   const { data: me, isLoading: isMeLoading } = useMe()
 
   return (
@@ -33,27 +33,33 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
                 Token Info
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Hash className="w-4 h-4 text-muted" />
-                <span className="font-medium text-foreground">Token ID:</span>
-                <span className="truncate">{token.data.details.token_id}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-muted" />
-                <span className="font-medium text-foreground">Symbol:</span>
-                <span>{token.data.details.symbol}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Coins className="w-4 h-4 text-muted" />
-                <span className="font-medium text-foreground">Balance:</span>
-                <span>
-                  {
-                    token.data.nfts.filter((nft) => nft.account_id === me?.hederaAccount.accountId)
-                      .length
-                  }
-                </span>
-              </div>
+            <CardContent className="space-y-3 text-sm text-muted-foreground lg:grid lg:grid-cols-2">
+              {[
+                { label: 'Token Id', value: token.data.details.token_id, icon: HashIcon },
+                {
+                  label: 'Treasury',
+                  value: token.data.details.treasury_account_id,
+                  icon: MailboxIcon,
+                },
+                {
+                  label: 'Symbol',
+                  value: token.data.details.symbol,
+                  icon: DollarSign,
+                },
+                {
+                  label: 'Balance',
+                  value: token.data.nfts.filter(
+                    (nft) => nft.account_id === me?.hederaAccount.accountId,
+                  ).length,
+                  icon: Coins,
+                },
+              ].map((item) => (
+                <div className="flex items-center gap-2">
+                  <item.icon className="w-4 h-4" />
+                  <span className="font-medium text-foreground">{item.label}</span>
+                  <span className="truncate">{item.value}</span>
+                </div>
+              ))}
             </CardContent>
           </Card>
         ) : (
@@ -69,11 +75,14 @@ export const InvoiceNft: React.FC<IInvoiceNft> = ({ tokenId }) => {
         ) : (
           token?.data.nfts.map((nft) => {
             return (
-              <InvoiceCard
-                key={`${nft.serial_number}-${token.data.details.token_id}`}
-                nft={nft}
-                tokenDetials={token.data.details}
-              />
+              (nft.account_id === me?.hederaAccount.accountId ||
+                token.data.details.treasury_account_id === me?.hederaAccount.accountId) && (
+                <InvoiceCard
+                  key={`${nft.serial_number}-${token.data.details.token_id}`}
+                  nft={nft}
+                  tokenDetials={token.data.details}
+                />
+              )
             )
           })
         )}
