@@ -1,11 +1,11 @@
 import { useMe } from '@/api/hooks'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { CoreText } from './core-text'
-import { Link, Loader2 } from 'lucide-react'
+import { ExternalLinkIcon, Link, Loader2, WalletIcon } from 'lucide-react'
 import { useAccount } from '@/modules/invoices/api/hooks'
+import { Button } from '../ui/button'
 
 export function SiteHeader() {
   const { data, isLoading } = useMe()
@@ -38,27 +38,37 @@ export function SiteHeader() {
 
 const UserAvatar = () => {
   const { data: account, isLoading: isLoadingAccount } = useAccount()
+  const { data: me, isLoading: isLoadingMe } = useMe()
   const { data, isLoading } = useMe()
-  if (isLoading || isLoadingAccount)
-    return <Loader2 className="animate-spin h-6 w-6 text-gray-500 ml-auto" />
+  if (isLoading || isLoadingAccount || isLoadingMe)
+    return (
+      <Button variant="outline" size="sm" disabled className="ml-auto">
+        <Loader2 className="animate-spin" />
+      </Button>
+    )
   return (
     <Popover>
-      <PopoverTrigger className="ml-auto cursor-pointer">
-        <Avatar className="border-2">
-          <AvatarImage
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${data?.id}`}
-            alt="@evilrabbit"
-          />
-          <AvatarFallback>ER</AvatarFallback>
-        </Avatar>
+      <PopoverTrigger className="ml-auto cursor-pointer" asChild>
+        <Button variant="outline" size="sm">
+          <WalletIcon />
+        </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 bg-card border-border/50">
+      <PopoverContent className="w-80 bg-card border-border/50 translate-y-3 -translate-x-4">
         <div>
           <div className="text-sm text-gray-500">Email</div>
           <div className="text-base font-medium">{data?.email}</div>
         </div>
         <div>
-          <div className="text-sm text-gray-500 mt-4">Wallet Address</div>
+          <div className="text-sm text-gray-500 mt-4 flex gap-1 items-center">
+            <p>Wallet Address</p>
+            <a
+              href={`https://hashscan.io/testnet/account/${me?.hederaAccount.accountId}`}
+              className="ml-2 text-primary"
+              target="_blank"
+            >
+              <ExternalLinkIcon size={12} />
+            </a>
+          </div>
           <div className="text-base font-mono break-all">{data?.hederaAccount.accountId}</div>
         </div>
         <div>
