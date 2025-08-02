@@ -10,6 +10,7 @@ export default [
       prettier,
       jest,
     },
+    ignores: ['ecosystem.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

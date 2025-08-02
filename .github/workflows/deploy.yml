@@ -37,4 +37,4 @@ jobs:
         run: |
           echo "Deploying to EC2..."
           rsync -avz --exclude 'node_modules' --exclude '.env' -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" backend/ ubuntu@${{ secrets.EC2_HOST }}:~/mintorafi
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "cd ~/mintorafi && ./restart-mintorafi.sh"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "~/scripts/restart-mintorafi.sh"
