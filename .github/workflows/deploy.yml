@@ -36,6 +36,11 @@ jobs:
       - name: Deploy to EC2
         run: |
           echo "Deploying to EC2..."
-          rsync -avz --exclude 'node_modules' --exclude '.env' -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" backend/ ubuntu@${{ secrets.EC2_HOST }}:~/mintorafi
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 
-          cd ~/mintorafi && pnpm install --production && pm2 restart mintorafi || pm2 start ecosystem.config.js --name mintorafi
+          rsync -avz --exclude 'node_modules' --exclude '.env' -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" backend/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/mintorafi
+      
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd ~/mintorafi
+            pnpm install --production
+            pnpm run db:generate && pnpm run db:push
+            pm2 restart mintorafi || pm2 start ecosystem.config.js --name mintorafi
+          EOF
