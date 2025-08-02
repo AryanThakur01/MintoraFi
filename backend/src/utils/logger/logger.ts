@@ -1,5 +1,5 @@
 import winston from 'winston'
-import { settings } from '../../settings.ts'
+import { settings } from '../../settings'
 
 const transports: winston.transport[] = [
   new winston.transports.Console({

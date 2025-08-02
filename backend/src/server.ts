@@ -1,8 +1,8 @@
 import express from 'express'
-import { settings } from './settings.ts'
-import logger from './utils/logger/logger.ts'
-import { routes } from './routes/index.ts'
-import { middlewares } from './middleware/index.ts'
+import { settings } from './settings'
+import logger from './utils/logger/logger'
+import { routes } from './routes/index'
+import { middlewares } from './middleware/index'
 
 // Creating an Express application
 const app = express()

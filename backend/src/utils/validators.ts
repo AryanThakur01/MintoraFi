@@ -1,7 +1,7 @@
-import { ResponseMessage, ResponseStatus } from '../data/enumerators.ts'
+import { ResponseMessage, ResponseStatus } from '../data/enumerators'
 import { type Request, type Response, type NextFunction } from 'express'
 import { ZodError, type ZodObject } from 'zod'
-import { sendResponse } from './send-response.ts'
+import { sendResponse } from './send-response'
 
 export function responseValidationError(res: Response, errors: ZodError): Response {
   const parsedErrors = errors.issues.map((issue) => {

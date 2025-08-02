@@ -1,8 +1,8 @@
 import express from 'express'
-import authRouter from './auth.ts'
-import userRouter from './user.ts'
-import nftRouter from './nft.ts'
-import filesRouter from './files.ts'
+import authRouter from './auth'
+import userRouter from './user'
+import nftRouter from './nft'
+import filesRouter from './files'
 
 const routes = express.Router()
 

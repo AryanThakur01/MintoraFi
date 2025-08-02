@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { settings } from "../settings.ts";
+import { settings } from "../settings";
 
 export class MailService {
   private transporter;

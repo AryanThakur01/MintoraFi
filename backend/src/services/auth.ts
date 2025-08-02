@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { randomInt, randomUUID } from 'crypto'
-import { MailService } from './mail.ts'
-import { prisma } from '../utils/prisma.ts'
-import { HederaAccountService } from './hedera/account.ts'
+import { MailService } from './mail'
+import { prisma } from '../utils/prisma'
+import { HederaAccountService } from './hedera/account'
 
 export class AuthService {
   private readonly mailService: MailService

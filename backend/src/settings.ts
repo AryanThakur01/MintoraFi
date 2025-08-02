@@ -1,4 +1,4 @@
-import { ISettings } from './interfaces/settings.ts'
+import { ISettings } from './interfaces/settings'
 import dotenv from 'dotenv'
 
 function parseBoolean(variable?: string): boolean {

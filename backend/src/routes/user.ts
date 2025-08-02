@@ -1,9 +1,9 @@
 import express from 'express'
-import { ResponseMessage, ResponseStatus } from '../data/enumerators.ts'
-import { sendResponse } from '../utils/send-response.ts'
-import { prisma } from '../utils/prisma.ts'
-import { AuthenticityService } from '../services/authenticity.ts'
-import { HederaAccountService } from '../services/hedera/account.ts'
+import { ResponseMessage, ResponseStatus } from '../data/enumerators'
+import { sendResponse } from '../utils/send-response'
+import { prisma } from '../utils/prisma'
+import { AuthenticityService } from '../services/authenticity'
+import { HederaAccountService } from '../services/hedera/account'
 const router = express.Router()
 router.get('/me', async (req, res) => {
   try {

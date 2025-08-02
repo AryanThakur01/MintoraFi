@@ -1,10 +1,10 @@
 import express from 'express'
-import { AuthService } from '../services/auth.ts'
-import { SAuth, SVerifyOtp, TAuth, TVerifyOtp } from '../serializers/auth.ts'
-import { ResponseMessage, ResponseStatus } from '../data/enumerators.ts'
-import { settings } from '../settings.ts'
-import { sendResponse } from '../utils/send-response.ts'
-import { validateBody } from '../utils/validators.ts'
+import { AuthService } from '../services/auth'
+import { SAuth, SVerifyOtp, TAuth, TVerifyOtp } from '../serializers/auth'
+import { ResponseMessage, ResponseStatus } from '../data/enumerators'
+import { settings } from '../settings'
+import { sendResponse } from '../utils/send-response'
+import { validateBody } from '../utils/validators'
 
 const router = express.Router()
 
