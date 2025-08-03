@@ -83,4 +83,9 @@ export class AuthService {
 
     return session
   }
+
+  // 5. Delete session
+  async deleteSession(sessionId: string) {
+    await prisma.session.delete({ where: { id: sessionId } })
+  }
 }

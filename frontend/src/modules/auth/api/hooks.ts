@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { authServices } from './services'
 import { isDefaultError } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -33,6 +33,22 @@ export const useResendOtp = () => {
     mutationKey: ['resend-otp'],
     mutationFn: authServices.requestOtp,
     onSuccess: (data) => toast.success(data.message),
+    onError: (error: AxiosError) => {
+      const err = error.response?.data
+      if (isDefaultError(err)) toast.error(err.message)
+    },
+  })
+}
+
+export const useLogout = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: ['logout'],
+    mutationFn: authServices.logout,
+    onSuccess: (data) => {
+      queryClient.clear()
+      toast.success(data.message)
+    },
     onError: (error: AxiosError) => {
       const err = error.response?.data
       if (isDefaultError(err)) toast.error(err.message)

@@ -6,7 +6,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { useLogout } from '@/modules/auth/api/hooks'
 import { useRouter } from '@tanstack/react-router'
+import { Loader2, LogOutIcon } from 'lucide-react'
 
 export const NavMain = ({
   items,
@@ -17,12 +19,21 @@ export const NavMain = ({
     icon?: React.ElementType
   }[]
 }) => {
+  const { mutateAsync: logout, isPending: isLoggingOut } = useLogout()
   const router = useRouter()
   const pathName = router.state.location.pathname
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.navigate({ to: '/' })
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
 
   return (
-    <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
+    <SidebarGroup className="h-full">
+      <SidebarGroupContent className="flex flex-col gap-2 h-full">
         {/* <SidebarMenu> */}
         {/*   <SidebarMenuItem className="flex items-center gap-2"> */}
         {/*     <SidebarMenuButton */}
@@ -42,7 +53,7 @@ export const NavMain = ({
         {/*     </Button> */}
         {/*   </SidebarMenuItem> */}
         {/* </SidebarMenu> */}
-        <SidebarMenu>
+        <SidebarMenu className="h-full">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
@@ -58,6 +69,16 @@ export const NavMain = ({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+          <SidebarMenuItem className="mt-auto">
+            <SidebarMenuButton
+              variant="outline"
+              className="cursor-pointer hover:bg-destructive bg-destructive/80"
+              onClick={handleLogout}
+            >
+              {isLoggingOut ? <Loader2 className="animate-spin" /> : <LogOutIcon />}
+              <span>Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

@@ -8,4 +8,7 @@ export const authServices = {
   verifyOtp: async (data: IVerifyOtpIn) => {
     return (await axios.post<IResponse<null>>('/api/auth/verify-otp', data)).data
   },
+  logout: async () => {
+    return (await axios.delete<IResponse<null>>('/api/auth/logout')).data
+  },
 }

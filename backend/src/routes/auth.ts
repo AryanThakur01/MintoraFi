@@ -61,4 +61,26 @@ router.post('/verify-otp', validateBody(SVerifyOtp), async (req, res) => {
   }
 })
 
+router.delete('/logout', async (req, res) => {
+  try {
+    const sessionId = req.cookies.sessionId
+
+    if (!sessionId) {
+      sendResponse(res, ResponseStatus.BAD_REQUEST, 'No active session found')
+      return
+    }
+
+    await authService.deleteSession(sessionId)
+    res.clearCookie('sessionId')
+
+    sendResponse(res, ResponseStatus.SUCCESS, 'Logged out successfully')
+  } catch (error) {
+    if (error instanceof Error) {
+      sendResponse(res, ResponseStatus.BAD_REQUEST, error.message)
+    } else {
+      sendResponse(res, ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)
+    }
+  }
+})
+
 export default router
