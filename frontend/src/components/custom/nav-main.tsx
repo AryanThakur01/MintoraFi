@@ -25,7 +25,7 @@ export const NavMain = ({
   const handleLogout = async () => {
     try {
       await logout()
-      router.navigate({ to: '/' })
+      router.navigate({ to: '/auth' })
     } catch (error) {
       console.error('Logout failed:', error)
     }
