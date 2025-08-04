@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'mintorafi', // make sure it is same in deployment.yml file too
       script: 'node dist/server.js',
-      max_memory_restart: '300M',
+      max_memory_restart: '250M',
     },
   ],
 }
