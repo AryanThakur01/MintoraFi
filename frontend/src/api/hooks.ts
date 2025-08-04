@@ -6,6 +6,9 @@ export const useMe = () => {
     queryKey: ['user-me'],
     queryFn: globalServices.getUser,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false,
+    retryOnMount: false,
+    refetchOnMount: false,
   })
 }
 
