@@ -11,13 +11,15 @@ export const RouteProtectorHOC = (Component: React.ComponentType) => {
     const { data: me, isLoading, isError } = useMe()
 
     useEffect(() => {
-      if (isError && !location.pathname.startsWith('/auth')) {
+      const isAuthPage = location.pathname.startsWith('/auth')
+      if (isLoading) return
+      if (isError && !isAuthPage) {
         navigate({ to: '/auth', search: { callbackUrl: location.pathname }, replace: true })
-      } else if (me && location.pathname.startsWith('/auth')) {
+        return
+      } else if (me && isAuthPage) {
         navigate({ to: '/', replace: true })
-      } else if (!isLoading) {
-        setIsRouteSettled(true)
-      }
+        return
+      } else if (!isLoading) setTimeout(() => setIsRouteSettled(true), 100)
     }, [isError, navigate, location.pathname, me, isLoading])
 
     useEffect(() => {
