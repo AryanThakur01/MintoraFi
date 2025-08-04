@@ -17,8 +17,10 @@ export const RouteProtectorHOC = (Component: React.ComponentType) => {
       } else if (me && location.pathname.startsWith('/auth')) {
         navigate({ to: '/', replace: true })
         setIsRouteSettled(true)
+      } else if (!isLoading) {
+        setIsRouteSettled(true)
       }
-    }, [isError, navigate, location.pathname, me])
+    }, [isError, navigate, location.pathname, me, isLoading])
 
     useEffect(() => {
       const root = window.document.documentElement
