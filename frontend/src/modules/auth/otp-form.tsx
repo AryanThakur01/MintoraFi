@@ -7,6 +7,7 @@ import { KeyRound, ArrowLeft, Timer } from 'lucide-react'
 import { InputOTP } from './components/input-otp'
 import { toast } from 'sonner'
 import { useRouter } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface OtpFormProps extends React.ComponentProps<'div'> {
   email: string
@@ -15,6 +16,7 @@ interface OtpFormProps extends React.ComponentProps<'div'> {
 }
 
 export const OtpForm = ({ className, callbackUrl, email, onBack, ...props }: OtpFormProps) => {
+  const queryClient = useQueryClient()
   const [otp, setOtp] = useState('')
   const [timeLeft, setTimeLeft] = useState(60)
   const [canResend, setCanResend] = useState(false)
@@ -36,6 +38,7 @@ export const OtpForm = ({ className, callbackUrl, email, onBack, ...props }: Otp
       e.preventDefault()
       if (otp.length !== 6) throw new Error('Please enter a valid 6-digit code.')
       await verifyOtp({ email, otp })
+      await queryClient.invalidateQueries({ queryKey: ['user-me'] })
       router.navigate({ to: callbackUrl ?? '/' })
     } catch (error) {
       if (error instanceof Error) toast.error(error.message)
