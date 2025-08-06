@@ -19,7 +19,7 @@ export const RouteProtectorHOC = (Component: React.ComponentType) => {
       } else if (me && isAuthPage) {
         navigate({ to: '/', replace: true })
         return
-      } else if (!isLoading) setTimeout(() => setIsRouteSettled(true), 100)
+      } else if (!isLoading) setTimeout(() => setIsRouteSettled(true), 500)
     }, [isError, navigate, location.pathname, me, isLoading])
 
     useEffect(() => {
