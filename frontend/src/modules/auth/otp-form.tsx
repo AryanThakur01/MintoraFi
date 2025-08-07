@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { cn, isDefaultError } from '@/lib/utils'
 import { useState, useEffect, type FormEvent } from 'react'
 import { useVerifyOtp, useResendOtp } from './api/hooks'
 import { Button } from '@/components/custom/button'
@@ -8,6 +8,7 @@ import { InputOTP } from './components/input-otp'
 import { toast } from 'sonner'
 import { useRouter } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 
 interface OtpFormProps extends React.ComponentProps<'div'> {
   email: string
@@ -41,7 +42,10 @@ export const OtpForm = ({ className, callbackUrl, email, onBack, ...props }: Otp
       await queryClient.invalidateQueries({ queryKey: ['user-me'] })
       router.navigate({ to: callbackUrl ?? '/' })
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message)
+      if (error instanceof AxiosError) {
+        const err = error.response?.data
+        if (isDefaultError(err)) toast.error(err.message)
+      }
     }
   }
 

@@ -11,6 +11,8 @@ import {
 import { useCreateInvoice } from '../api/hooks'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { isDefaultError } from '@/lib/utils'
+import { AxiosError } from 'axios'
 
 export const CreateInvoiceDialog = () => {
   const { mutateAsync, isPending } = useCreateInvoice()
@@ -20,7 +22,12 @@ export const CreateInvoiceDialog = () => {
       await mutateAsync()
       setOpen(false)
     } catch (error) {
-      toast.error('Failed to create invoice')
+      if (error instanceof AxiosError) {
+        const err = error.response?.data
+        if (isDefaultError(err)) {
+          toast.error(err.message)
+        }
+      }
     }
   }
   return (

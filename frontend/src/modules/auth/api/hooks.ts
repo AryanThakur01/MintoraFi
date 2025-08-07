@@ -21,10 +21,6 @@ export const useVerifyOtp = () => {
     mutationKey: ['verify-otp'],
     mutationFn: authServices.verifyOtp,
     onSuccess: (data) => toast.success(data.message),
-    onError: (error: AxiosError) => {
-      const err = error.response?.data
-      if (isDefaultError(err)) toast.error(err.message)
-    },
   })
 }
 
