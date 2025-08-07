@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { globalServices, type IMarketplaceNftFilters } from './services'
 import { toast } from 'sonner'
+import type { AxiosError } from 'axios'
+import { isDefaultError } from '@/lib/utils'
 
 export const useAccount = () => {
   return useQuery({
@@ -73,6 +75,12 @@ export const usePurchaseNft = () => {
       toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: ['marketplace-nfts'] })
       queryClient.invalidateQueries({ queryKey: ['user-account'] })
+    },
+    onError: (error: AxiosError) => {
+      const err = error.response?.data
+      if (isDefaultError(err)) {
+        toast.error(err.message)
+      }
     },
   })
 }
